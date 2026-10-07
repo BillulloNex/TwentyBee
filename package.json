@@ -96,5 +96,10 @@
     "singleQuote": true,
     "trailingComma": "all",
     "endOfLine": "lf"
+  },
+  "dependencies": {
+    "@langfuse/otel": "^5.11.1",
+    "@langfuse/vercel-ai-sdk": "^5.11.1",
+    "@opentelemetry/sdk-trace-node": "^2.11.0"
   }
 }
