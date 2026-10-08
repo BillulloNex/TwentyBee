@@ -1,0 +1,20 @@
+# TwentyBee Overlay — layers Langfuse AI observability onto the official Twenty image.
+# Installs @langfuse/otel, @langfuse/vercel-ai-sdk, and @opentelemetry/sdk-trace-node,
+# then injects a Langfuse bootstrap script that runs before the main entrypoint.
+
+FROM twentycrm/twenty:latest
+
+WORKDIR /app
+
+# Install Langfuse + OTel dependencies
+RUN yarn add @langfuse/otel@^5.11.1 \
+             @langfuse/vercel-ai-sdk@^5.11.1 \
+             @opentelemetry/sdk-trace-node@^2.11.0 \
+    && yarn cache clean
+
+# Copy the Langfuse bootstrap that registers the span processor at startup.
+# This runs via NODE_OPTIONS=--require so it executes before any app code.
+COPY langfuse-bootstrap.cjs /app/langfuse-bootstrap.cjs
+
+# Prepend --require to NODE_OPTIONS so the bootstrap runs on every node process
+ENV NODE_OPTIONS="--require /app/langfuse-bootstrap.cjs ${NODE_OPTIONS:-}"
