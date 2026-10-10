@@ -1,0 +1,26 @@
+{
+  "name": "faa-twenty-import",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Import FAA aircraft owner data from Notion into Twenty CRM",
+  "scripts": {
+    "import": "node import.mjs",
+    "import:schema": "node import.mjs --phase schema",
+    "import:companies": "node import.mjs --phase companies",
+    "import:people": "node import.mjs --phase people",
+    "import:aircraft": "node import.mjs --phase aircraft",
+    "status": "node import.mjs --status",
+    "reset": "node import.mjs --reset",
+    "deploy": "npx wrangler deploy",
+    "cf:start": "curl -s -X POST https://faa-import-worker.thomas-aed.workers.dev/start | jq",
+    "cf:status": "curl -s https://faa-import-worker.thomas-aed.workers.dev/status | jq",
+    "cf:stop": "curl -s -X POST https://faa-import-worker.thomas-aed.workers.dev/stop | jq",
+    "cf:snapshot": "curl -s -X POST https://faa-import-worker.thomas-aed.workers.dev/snapshot | jq"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "faa-import-worker",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-10-07",
+  "observability": {
+    "enabled": true
+  },
+  "containers": [
+    {
+      "class_name": "FaaImportContainer",
+      "image": "./Dockerfile",
+      "instance_type": "standard-2",
+      "max_instances": 3
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "FAA_IMPORT",
+        "class_name": "FaaImportContainer"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["FaaImportContainer"]
+    }
+  ]
+}

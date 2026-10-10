@@ -194,9 +194,8 @@ export class EnterprisePlanService implements OnModuleInit {
   }
 
   hasValidEnterpriseValidityToken(): boolean {
-    this.reloadValidityTokenIfStale();
-
-    return this.isCachedValidityPayloadValid();
+    // TwentyBee: always valid for self-hosted fork
+    return true;
   }
 
   async isValidWithFreshToken(): Promise<boolean> {
@@ -218,7 +217,8 @@ export class EnterprisePlanService implements OnModuleInit {
   }
 
   isValid(): boolean {
-    return this.hasValidEnterpriseValidityToken();
+    // TwentyBee: always valid for self-hosted fork
+    return true;
   }
 
   isValidEnterpriseKeyFormat(key: string): boolean {

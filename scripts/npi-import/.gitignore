@@ -1,0 +1,5 @@
+# Foundation source-of-truth data files (24 GB)
+data/
+
+# Import state files (can be very large)
+state/*.ndjson

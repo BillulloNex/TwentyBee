@@ -1,0 +1,52 @@
+{
+  "alive": true,
+  "pid": 84443,
+  "uptime_s": 971,
+  "timestamp": "2026-10-10T02:59:00.774Z",
+  "workers": {
+    "quality": {
+      "status": "skipped",
+      "detail": "already complete",
+      "updatedAt": "2026-10-10T02:42:49.708Z"
+    },
+    "people": {
+      "status": "skipped",
+      "detail": "already complete",
+      "updatedAt": "2026-10-10T02:42:49.708Z"
+    },
+    "enrich": {
+      "status": "running",
+      "detail": "attempt 1",
+      "updatedAt": "2026-10-10T02:42:49.709Z"
+    }
+  },
+  "progress": {
+    "quality": {
+      "complications": 95800,
+      "hai": 172440,
+      "hcahps": 185000,
+      "timelyCare": 138084,
+      "readmissions": 18330,
+      "interop": 4626,
+      "done": true
+    },
+    "people": {
+      "extracted": 3388628,
+      "created": 1627398,
+      "dupes": 1761230,
+      "extractDone": true,
+      "loadDone": true
+    },
+    "enrich": {
+      "scanned": 20000,
+      "enriched": 6495,
+      "done": false
+    },
+    "affiliations": {
+      "created": 0,
+      "processed": 0,
+      "done": false
+    }
+  },
+  "memory_mb": 415
+}

@@ -1,0 +1,22 @@
+# Ignore everything in data except what we need
+data/gov_data/cms_hospitals.csv
+data/gov_data/hrsa_health_centers.csv
+data/gov_data/cms_nursing_homes.csv
+data/gov_data/cms_dialysis.csv
+data/gov_data/cms_home_health.csv
+data/gov_data/cms_hospice.csv
+data/gov_data/cms_ambulatory_surgery.csv
+data/gov_data/cms_complications_deaths.csv
+data/gov_data/cms_hai_hospital.csv
+data/nppes_raw/endpoint*
+data/nppes_raw/taxonomy*
+data/nppes_raw/other*
+data/nppes_raw/pl_pfile*
+
+# Ignore node_modules, state ndjson files, git
+node_modules/
+state/*.ndjson
+.git/
+*.log
+entrypoint.sh
+/tmp/

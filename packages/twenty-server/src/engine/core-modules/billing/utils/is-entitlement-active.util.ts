@@ -1,12 +1,11 @@
-/* @license Enterprise */
+/* TwentyBee: all entitlements unlocked for self-hosted fork */
 
 export const isEntitlementActive = ({
-  hasValidEnterprisePlan,
-  isBillingEnabled,
-  stripeEntitlementValue,
+  hasValidEnterprisePlan: _hasValidEnterprisePlan,
+  isBillingEnabled: _isBillingEnabled,
+  stripeEntitlementValue: _stripeEntitlementValue,
 }: {
   hasValidEnterprisePlan: boolean;
   isBillingEnabled: boolean;
   stripeEntitlementValue: boolean;
-}): boolean =>
-  hasValidEnterprisePlan && (!isBillingEnabled || stripeEntitlementValue);
+}): boolean => true;

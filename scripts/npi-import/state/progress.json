@@ -1,0 +1,107 @@
+{
+  "currentPhase": "enrich",
+  "schema": {
+    "completed": true
+  },
+  "facilities": {
+    "hospitals": {
+      "done": true,
+      "count": 5419,
+      "created": null,
+      "dupes": 0
+    },
+    "healthCenters": {
+      "done": true,
+      "count": 1542,
+      "created": null,
+      "dupes": 17585
+    },
+    "nursingHomes": {
+      "done": true,
+      "count": 14493,
+      "created": null,
+      "dupes": 197
+    },
+    "dialysis": {
+      "done": true,
+      "count": 7490,
+      "created": null,
+      "dupes": 0
+    },
+    "homeHealth": {
+      "done": true,
+      "count": 12460,
+      "created": null,
+      "dupes": 0
+    },
+    "hospice": {
+      "done": true,
+      "count": 6669,
+      "created": null,
+      "dupes": 0
+    },
+    "ambulatorySurgery": {
+      "done": true,
+      "count": 5614,
+      "created": null,
+      "dupes": 97
+    },
+    "loadDone": true,
+    "createdCount": 0,
+    "skippedDupes": 17879
+  },
+  "quality": {
+    "complications": {
+      "done": true,
+      "count": 95800,
+      "created": 95800
+    },
+    "hai": {
+      "done": true,
+      "count": 172440,
+      "created": 172440
+    },
+    "hcahps": {
+      "done": true,
+      "count": 185000,
+      "created": 185000
+    },
+    "timelyCare": {
+      "done": true,
+      "count": 138084,
+      "created": 137884
+    },
+    "readmissions": {
+      "done": true,
+      "count": 18330,
+      "created": 18330
+    },
+    "interop": {
+      "done": true,
+      "count": 4626,
+      "created": 4626
+    },
+    "loadDone": true,
+    "createdCount": 614080
+  },
+  "people": {
+    "extractDone": true,
+    "extractCount": 3388628,
+    "loadDone": true,
+    "loadOffset": 3388625,
+    "createdCount": 1627398,
+    "skippedDupes": 1761230
+  },
+  "enrich": {
+    "done": false,
+    "nppesProcessed": 20000,
+    "enrichedPeople": 6495
+  },
+  "affiliations": {
+    "done": false,
+    "created": 0,
+    "processed": 0,
+    "offset": 0
+  },
+  "lastSavedAt": "2026-10-10T02:59:00.773Z"
+}

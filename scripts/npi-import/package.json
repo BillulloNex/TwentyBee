@@ -1,0 +1,22 @@
+{
+  "name": "npi-twenty-import",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Import NPI/NPPES healthcare provider data into Twenty CRM",
+  "scripts": {
+    "import": "node import.mjs",
+    "import:schema": "node import.mjs --phase schema",
+    "import:companies": "node import.mjs --phase companies",
+    "import:people": "node import.mjs --phase people",
+    "import:enrich": "node import.mjs --phase enrich",
+    "status": "node import.mjs --status",
+    "reset": "node import.mjs --reset",
+    "test": "node import.mjs --dry-run --limit 100"
+  },
+  "dependencies": {
+    "csv-parse": "^5.6.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.149.0"
+  }
+}
