@@ -1,0 +1,1598 @@
+{
+  "timestamp": "2026-10-11T21:22:24.880Z",
+  "durationSec": "224.0",
+  "summary": {
+    "totalInputCompanies": 266,
+    "companiesEnriched": 260,
+    "companiesCreated": 6,
+    "totalReconciled": 266
+  },
+  "createLedger": [
+    {
+      "id": "6253d8d4-e4bd-4220-a839-edc3ae6b5da2",
+      "name": "Crown Obstetrics and Gynecology PC"
+    },
+    {
+      "id": "7286b413-e5c6-4e56-ad9e-dd01f3cecc36",
+      "name": "Alyeska Center for Facial Plastic Surgery & ENT (Ear Nose and Throat Specialists Alaska)"
+    },
+    {
+      "id": "0de9981e-6c65-4a12-848a-6092b3996df1",
+      "name": "Denali OB-GYN Clinic"
+    },
+    {
+      "id": "4031a529-76a1-4498-a26c-16a51adb9b8a",
+      "name": "Wyoming Cardiopulmonary Services"
+    },
+    {
+      "id": "ad2691bc-b9c6-47da-a899-7cbe3d1cf079",
+      "name": "Huntington Pulmonary Medical Group"
+    },
+    {
+      "id": "e743bd1b-557b-40fe-9abc-cd96a8ca7895",
+      "name": "Associates in Neurology, P.C."
+    }
+  ],
+  "updateLedger": [
+    {
+      "companyId": "dd2ae51a-8cda-4103-be32-ab58c185e813",
+      "name": "Manchester Urology Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "30ae84ca-50cd-4308-a19c-6b50cc1585dc",
+      "name": "Chest Medicine Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "318342eb-9f26-40a3-a7c1-50f2971bfe7a",
+      "name": "Concord Ophthalmologic Associates, P.A. (Concord Eye Center)",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "6589075b-87ab-4cb1-ba5a-345cbd41dce7",
+      "name": "Portland Gastroenterology Associates, P.A. (Portland Gastroenterology Center)",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "c63e5c3c-9c92-4f1c-8a53-fc3e6267d5e7",
+      "name": "Atwood Medical Associates, Ltd.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "36c3080d-c7d9-447b-a3c8-e09137ba9262",
+      "name": "Bedford Commons OB-GYN, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "caad857b-3fa9-4faf-8b74-1661b1142f16",
+      "name": "Medical Associates of Rhode Island, Inc. (Bristol County Medical Center)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "0121bb30-3e24-43bd-a4e2-3d03fc46d727",
+      "name": "Dermatology Associates, LLC (Maine)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "0705b3a7-e802-4482-bf1c-1fc28c91494a",
+      "name": "Evergreen Family Health Partners",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "e1e43ada-5964-4264-b273-ade67e31dd08",
+      "name": "Southern New Hampshire Internal Medicine Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "644e91d9-6122-4615-8627-5a409f7b4be4",
+      "name": "Maine Eye Center, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "f4838ef3-55a9-4742-a644-582cd7a95972",
+      "name": "Atlantic Digestive Specialists, PLLC",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "babe25eb-c2a8-4ddc-9e60-e862b5ad6810",
+      "name": "Nashua Eye Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "f6a80761-011b-4654-9c77-c6877070977c",
+      "name": "The Medical Eye Center, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "4e2a600e-7487-48a6-befe-2821a0b58b2b",
+      "name": "Eyesight Ophthalmic Services, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "a5ccf71b-dae5-4e1a-894d-a72cec61b753",
+      "name": "Aspire Dermatology, LLC",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "fd9d9e2c-e841-46a0-afc4-92a6b51e91f8",
+      "name": "Center for Interventional Pain & Spine, LLC",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "9fb89a92-b9e0-453d-9d26-1ea6882c12e8",
+      "name": "Pain and Spine Specialists of Maryland, LLC",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "f6c87c26-41c8-4c48-915c-31d4ea17d484",
+      "name": "Longwood Eye & LASIK (Longwood Eye LLC)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "d891fcdf-750a-47c0-9be5-49cba7ba6562",
+      "name": "Advanced Eye Centers, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "2f1da589-8455-47cd-b6d2-632214a3a379",
+      "name": "SkinCare Physicians, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "69274c87-6a41-496c-8b77-966a605ad528",
+      "name": "Skin Care Specialty Physicians, LLC (SCS Physicians)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "087733e9-3459-4dc0-8a2a-0677c6144789",
+      "name": "Dedicated to Women OB-GYN, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "987aaba0-8c20-4c10-9b6e-c3cf697237e9",
+      "name": "Ear, Nose & Throat Surgeons of Western New England, LLC",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "93f778ed-b2f2-4bb7-b0fa-d00ddac48f3c",
+      "name": "New England OB/GYN Associates, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "85128aee-a586-41c9-8e7c-eec32a75409c",
+      "name": "Anne Arundel Gastroenterology Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "abe2db60-445c-42ed-8e86-fa7d5dff90b1",
+      "name": "Frederick Gastroenterology Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "cd2c0774-3a45-409e-8d9c-bfb41efc7743",
+      "name": "Podiatry Associates, P.A. (MVS Podiatry Associates)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "6714d07a-7715-48c1-8218-188d2c3997e0",
+      "name": "Mountain Spring Vascular LLC (National Vascular Associates)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "32a4e14c-c827-4413-9c77-7705f3f4e9fb",
+      "name": "Community Neuroscience Services, LLC",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "43b214da-002f-437c-acb1-9b6fc7c26b98",
+      "name": "Burke Dermatology, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "4b097cb8-f12d-42d7-a40e-6d1678dcd5ff",
+      "name": "Eye Physicians and Surgeons, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "cd751582-b9ec-4799-b8b9-b1f843a10297",
+      "name": "Delaware Ophthalmology Consultants, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "224e7a87-43b3-46fb-a835-f88846067a4e",
+      "name": "Newton Wellesley Eye Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "32d3e4d9-519f-45d9-9a07-4ebe853e6527",
+      "name": "Northeast Urologic Surgery, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "e9a95f6c-1e1c-4d15-a8c5-c227340ef79b",
+      "name": "Urology Group of Western New England, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "300d4599-ab60-4a84-a3a6-d960986fd149",
+      "name": "Microsurgical Eye Consultants",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "721a7658-b09e-4a6a-85c6-a688635ea98a",
+      "name": "South Shore Dermatology Physicians, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "cc995c6c-77bb-4332-bc15-bee38d4239b6",
+      "name": "Spindel Eye Associates",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "be0c57ff-7d4a-4177-a6d7-da3b808f2392",
+      "name": "Andover Eye Associates, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "fd4d0d91-a8a1-4ecb-b9db-7e9fcccde14f",
+      "name": "Fore River Urology, LLC",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "f55982ef-603b-48b9-ba91-561714ce9db3",
+      "name": "Down East Orthopedic Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "3aff4866-9a14-4092-b869-b63756c08856",
+      "name": "Harford Gastroenterology Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "543c8b34-56dc-4a67-b382-e1d167cce848",
+      "name": "Nielsen Eye Center, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "27669ff0-94c7-45bb-a16a-087d9e0d9181",
+      "name": "Northeast Allergy, Asthma & Immunology, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "c4df4b42-0df4-4f43-92f2-5ab9f261947e",
+      "name": "New England Ear, Nose & Throat",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "eb5c71cd-5da9-4867-abe1-274553f24d7d",
+      "name": "Boston ENT Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "64667642-7bb1-4fb0-9018-a3c40f21d25f",
+      "name": "Associates in Otolaryngology Head and Neck Surgery, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "dd0090f6-32d0-443a-ad09-abd7c5f75706",
+      "name": "Berkshire Eye Center, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "a0307306-950a-4c6b-9338-215c0db5cf94",
+      "name": "Krauss Dermatology, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "425b2e16-df87-4c97-842d-13adbcd8312e",
+      "name": "Capital Diabetes & Endocrine Associates, LLC",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "43531c06-c157-45e0-a7f0-4973cd189a82",
+      "name": "Maryland Endocrine, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "41da6377-2fbf-42f7-a846-d500c4b9b065",
+      "name": "Cardiovascular Specialists of Frederick, LLC",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "2cd4156f-37b2-455b-a4e4-544490ad8781",
+      "name": "Maryland Cardiology Associates",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "7fb47936-8670-49dd-9fe0-6f4983c41b07",
+      "name": "NH Eye Associates, PLLC",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "a5ba7937-166c-44d4-ba55-42b85cf5e7c5",
+      "name": "ENT & Allergy, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "364d8000-8edf-42f9-83f5-01aa4da819e3",
+      "name": "Ear, Nose and Throat Consultants, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "48150ae1-2f40-43b2-96c6-ad9462c9e281",
+      "name": "Family Ear, Nose & Throat, LLC",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "3fb9c0ce-3c41-4cc9-87b7-9af7e9dfd322",
+      "name": "Mass Lung & Allergy, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "761e012f-91dd-4286-bbd4-56172d07e72c",
+      "name": "Urology Associates of Cape Cod, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "70fefd29-101e-472a-88a9-952aca56326d",
+      "name": "Seacoast Orthopedic Associates, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "96185f2d-5290-4af3-8133-7deded725d0c",
+      "name": "Rheumatology Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "d1c2074a-d2fc-4e5d-b7e5-1cafaa9b918c",
+      "name": "Rheumatology Associates of Baltimore, LLC",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "30ae3881-f09e-41a6-af1b-8e38bef10d3a",
+      "name": "Digestive Health Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "789646b4-58df-4521-8623-0c3422aaad88",
+      "name": "Cardiovascular Consultants of Southern Delaware",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "44ab04f2-8436-41b5-8d8b-3ea734d409b3",
+      "name": "Washington Eye Physicians & Surgeons, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "309995fb-04bb-46f0-b272-dd14992a5f96",
+      "name": "Institute for Asthma & Allergy, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "3edc181c-54ac-4460-8a06-42fe032918af",
+      "name": "Chesapeake & Washington Heart Care, PC",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "06a7bb2b-0407-46a8-b8e7-358003f744de",
+      "name": "Metropolitan Nephrology Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "fbbc01b9-173b-4f0e-ad55-052617ba137f",
+      "name": "Capital Nephrology, PC",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "d7a8dd62-34bd-4a77-9309-41d56244aafe",
+      "name": "District Orthopaedics, PC",
+      "status": "ENRICHED",
+      "fitScore": 2
+    },
+    {
+      "companyId": "732ae116-8754-437f-824f-97754fd00063",
+      "name": "Dermatologic Surgery Center of Washington, LLC",
+      "status": "ENRICHED",
+      "fitScore": 2
+    },
+    {
+      "companyId": "2dd8a9fb-7c24-466e-8275-2b10c3cde604",
+      "name": "Frederick Dermatology Associates, LLC",
+      "status": "ENRICHED",
+      "fitScore": 2
+    },
+    {
+      "companyId": "77942933-c182-4c53-884c-279abafbc139",
+      "name": "Frederick Foot & Ankle Specialists, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "f0ef9566-4f62-4a52-8cfd-2557cb0dc538",
+      "name": "North Suburban Eye Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "4b7682a4-91fb-4834-ace3-54c6498c6c7d",
+      "name": "Newton Wellesley Neurology Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "98068986-a7d7-4cb0-b1fe-8500ab13c060",
+      "name": "Asthma & Allergy Physicians, LLC",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "1d745bc2-bf0e-4395-8007-c05f7ce3e783",
+      "name": "Greater Boston Allergy Asthma Sinus & Immunology Centers, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "0da8255d-a126-4e19-87f4-5ae4cdc42034",
+      "name": "Hampshire Gastroenterology Associates, LLC",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "5cc70835-a14a-447c-8115-cb5756f5d5d5",
+      "name": "Andover Obstetrics and Gynecological Associates, PC",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "4cef231c-8b25-49ff-8443-95e8e275c3ab",
+      "name": "Stoney Batter Family Medicine Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "3c6374ae-f64e-47bd-9479-b40edd19587b",
+      "name": "Sussex Eye Center, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 2
+    },
+    {
+      "companyId": "cb4ba4da-7619-4aef-850a-883997dbea4a",
+      "name": "Alaska Women's Health",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "90dfc267-7087-45cb-9cf5-e719e12b4d9b",
+      "name": "Alyeska Vascular Surgery",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "33eb1d46-44a6-4008-bfd8-e1d09a1a62b7",
+      "name": "Kidney and Hypertension Clinic of Alaska",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "679c234b-985d-4ac2-bebc-53567ba5cba4",
+      "name": "Pacific Cataract and Laser Institute of Alaska",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "8ee0a186-4625-47bc-9348-ebd3274dd3b5",
+      "name": "Katmai Oncology Group",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "7dd69cbe-731b-41e1-b9f1-a7d7a8ff8a37",
+      "name": "Makar Eyecare",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "5db3fc55-0677-4450-9d90-10ca997bdb50",
+      "name": "Arete Family Care",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "d3e04a7d-e5da-417f-ab0a-a0884efde10c",
+      "name": "Coastal Neurology & Neurosurgery",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "6fb069c3-615f-43a4-be99-ab39a5809007",
+      "name": "Peak Neurology and Sleep Medicine",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "0244db1a-76fa-4a7d-a29b-a517d1c2b7e3",
+      "name": "Alaska Orthopedic Specialists",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "128bd86c-8cba-4175-84ca-7ce379cf7ef7",
+      "name": "Chena Health (Chena Obstetrics & Gynecology)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "96496e7b-74fa-49ac-92ce-94df461d3921",
+      "name": "Women's Care of Alaska",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "973f1048-67bf-45aa-82b9-ea2fcf2241ca",
+      "name": "Wolf Eye Center",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "2b4fb330-6318-447e-9936-1682f9d4cfe8",
+      "name": "Ophthalmic Associates (Anchorage)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "d91995de-afb3-4f09-ad21-39820e0cd4cb",
+      "name": "Island Orthopaedics",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "d77c5ac5-d8a5-47ca-9565-ef1d71df282a",
+      "name": "Advanced Psychiatric Therapeutics",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "61aabff9-d648-4bf7-8599-131f22abfd5d",
+      "name": "Excel Neurosurgery & Spine (Excel Spine & Orthopedic Institute)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "b870f742-dec4-402c-90d1-d771932251dc",
+      "name": "Hawaii Pacific Neuroscience",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "1b0db819-d8dd-4509-bb6d-cfca7f69e6a4",
+      "name": "Pearl City Medical Associates",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "2d4c91b9-f7aa-4e43-9c54-0ca46cd4ff57",
+      "name": "Hawaii Nephrologists",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "51d23102-f8d2-46d1-8e7c-77e2d0985146",
+      "name": "Aloha Eye Clinic",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "a7762da1-4e7d-4dfa-9a36-90bf2362bf55",
+      "name": "Manakai O Malama Integrative Healthcare Group",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "5c9d19db-08c9-4309-8503-5d8ffcd56936",
+      "name": "Teton Orthopaedics (Orthopaedics of Jackson Hole)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "2d91d05f-a579-48d6-88a6-a5bb6262b156",
+      "name": "Digestive Care Specialists",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "03da7285-7c1e-4b80-a287-760ec39b0adf",
+      "name": "Surgical Associates, PC (Billings)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "60fc4d09-68c0-4f2e-8608-3de4cd9f670b",
+      "name": "Medical Eye Specialists",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "f61f8d32-8622-4679-8c35-2f35abd5734e",
+      "name": "Origin Health",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "29fcc2ea-7c85-435b-8c28-ef6aa8a945bd",
+      "name": "Sentinel Mental Health",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "9c052be6-1e65-4902-a5a3-d93eef3684d7",
+      "name": "Balboa Nephrology Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "169c79ef-25db-4f5c-a8bc-6020e699b574",
+      "name": "Pacific Neuropsychiatric Specialists",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "63a91e81-470b-4cdc-989f-885bbaaa0982",
+      "name": "Foothill Cardiology Medical Group, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "03291290-b422-4447-80c9-6e69af074123",
+      "name": "Healthpointe Medical Group, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "750bbf02-5e7a-42cf-b3b6-02cff15b97c5",
+      "name": "Pacific Cardiovascular Associates Medical Group, Inc. (PCA Cardiology)",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "d0565e27-ade8-40f9-95e3-8a1b9b7bea2e",
+      "name": "Southern California Kidney Consultants, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "cbfec2f9-4f84-4dd4-874d-b1abcec0e3e9",
+      "name": "Coastal Family Medicine, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "f5dd6aba-cb87-4e2e-81ed-9f10c22e1ea1",
+      "name": "Digestive Care Consultants Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "5d5c0c04-9af4-489a-a626-f319c816ea55",
+      "name": "Bay Psychiatric Associates",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "91e60757-827c-4b5d-ba6c-009a5bc846c1",
+      "name": "Sacramento Ear, Nose & Throat Surgical & Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "8ae75dd8-e775-4dce-abf3-71a448b247a6",
+      "name": "West Coast Kidney Institute",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "086061bc-9c4f-4ad2-9a57-a68d063c2018",
+      "name": "Orthopedic Associates of Northern California",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "2d214ab0-b3ab-401f-95e1-1c4d9af6256f",
+      "name": "California Pacific Orthopaedics",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "e010bfc2-1f19-4562-9838-7442b073c39b",
+      "name": "Monterey Bay GI Consultants Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "b50e93d1-e3db-42ce-9c01-4cf302676f8d",
+      "name": "Napa Valley Orthopaedic Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "7a802b0a-1e24-44c6-affe-d240a3b4496f",
+      "name": "Peninsula Orthopedic Associates",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "6c8b60a8-5fc3-4c2a-a4fa-246592a91ac4",
+      "name": "East Bay Nephrology Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "77c9d787-3a72-4a1a-9dd3-ae103cf418a1",
+      "name": "Capital Nephrology Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "b327ec75-3506-411c-a10f-e3ef4ea285a2",
+      "name": "California Cardiovascular Consultants & Medical Associates",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "f566106d-0d8e-4015-89e6-f40809c69bc5",
+      "name": "Rocklin Family Practice & Sports Medicine",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "75ec53ea-5257-4e7f-8f9c-07f67f93835e",
+      "name": "Orthopedic Trauma Surgeons of Northern California",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "d556e3d0-eaa7-419f-91f1-6fe81464e1fd",
+      "name": "Sierra Pacific Orthopedics",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "6956ba37-5813-4cac-94b2-2777b3270eb6",
+      "name": "The Nephrology Group, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "e43c9b43-04cc-4b38-9d24-f11b1b03f948",
+      "name": "Chaparral Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "657f7e7e-b349-4015-81d1-5e3618b0e123",
+      "name": "Palm Valley Multi-Specialty Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "43d89832-10ba-43dc-900a-c60d20f750b7",
+      "name": "Southern California Orthopaedic Trauma Specialists (BCI Orthopaedics)",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "08c2fafa-1ab5-4c92-9c51-bbf61cee3941",
+      "name": "Santa Maria Gastroenterology Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "40b3c8d7-a920-46fa-9949-b1f1a25a0bff",
+      "name": "San Diego Cardiac Center",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "a5be86b7-6b34-4ea9-808a-11c99579aab9",
+      "name": "Cardiovascular Institute of San Diego",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "e45e6929-7fd8-4217-8920-3a9b550c74da",
+      "name": "Golden State Orthopedics & Spine",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "80a4ff83-3a21-4ec6-8942-8bf7c9baa698",
+      "name": "Premier Orthopaedic & Trauma Specialists",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "523416ae-0fdd-4f0d-afc8-2df7497f5dd2",
+      "name": "California Orthopaedic Institute",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "8d341ba1-4e1a-409a-b947-1b5501fa647a",
+      "name": "Nephrology Associates Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "d350bb8f-6f2f-4f7b-88bc-72fbaedcd8cd",
+      "name": "Alta Orthopaedics",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "3a05427f-1c7b-41f3-a27e-a1457fdf3595",
+      "name": "Progeny Psychiatric Clinic",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "fd33f471-c21c-477d-add1-bd9573340cfa",
+      "name": "Sierra Nevada Specialty Care (O'Neill Clark Narvarte & Vicks PC)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "37b5b926-01fb-416a-90d7-eb056cf16675",
+      "name": "Comprehensive Psychiatric Services",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "48a8ab74-d279-48be-9666-12eb43de2197",
+      "name": "LGTC Group",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "f2d254df-1068-451e-9402-942cf8925acb",
+      "name": "Innovative Medical Solutions (IMS Med Group)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "e17001c0-6e33-4785-a541-0c788807ee97",
+      "name": "FocusHealth Medical Group (Focus On Health Inc)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "ffaff529-5882-45e4-8d79-0d453736f255",
+      "name": "Riverside Faculty Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "df4f2151-dd3a-4e43-8868-7c6e7e1dd6d7",
+      "name": "Del Sur Healthcare",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "aed64e2b-3025-4f3a-82bf-5152751c3631",
+      "name": "Saddleback Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "a94b5f4e-a98a-4442-a6c6-db7cec212736",
+      "name": "Imperial Valley Family Care Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "933d65cf-c2e9-47ac-8a11-7eef25117778",
+      "name": "Alertive Healthcare Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "27d504f6-9b32-4a38-b5e4-e0664681bdea",
+      "name": "Clineva Urgent Care (Portola Medical Services PC)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "dea09860-4342-4929-ab08-549114ff8919",
+      "name": "Horizon Multicare Group",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "005968fd-5b97-4fcc-8760-4657a73fe0e1",
+      "name": "COR Healthcare Medical Associates",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "59de63fc-450d-4e73-9d0d-e83d388ae0dc",
+      "name": "Healthy Living Primary Care",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "19a3ac1d-c2f6-4ccb-bb58-db3992faa566",
+      "name": "NewportCare Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "a3f66dd0-a03b-4fa6-b384-c37725b9390c",
+      "name": "Optima Health Group",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "ba90f042-f725-4cde-b1cc-9c3d887c8e36",
+      "name": "Blue Stone Health & Wellness (Newstart Medical Group)",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "ceee8367-5aa4-4939-b61c-de870a0235e3",
+      "name": "All Valley Urgent Care (Tyson Medical)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "e8015551-f4eb-4ef4-ac5f-abac03ba0477",
+      "name": "Marque Urgent Care (Marque Medical Clinic)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "62f2ccae-4625-42a3-9a9e-4230cff7577e",
+      "name": "AFC Urgent Care Fresno (California Dreams Medical Corp)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "39918590-5a12-42c2-919c-d5c7e06129e0",
+      "name": "Arya Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "b360a610-8ca3-4b0c-8818-b3e88eedbbd6",
+      "name": "Stockton Cardiology Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "a4b80850-7655-47d7-8ca4-1acda903f05e",
+      "name": "California Heart Associates",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "fed123ae-c1f0-4130-9958-138d5eb0471f",
+      "name": "Cardiology Associates Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "1f81c976-6f98-43b4-a403-44d433474e4c",
+      "name": "Cardiovascular Consultants Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "d2593df5-e487-4361-9ae7-a0e457e18fe9",
+      "name": "Girard Orthopaedic Surgeons Medical Group",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "d7660064-f370-41fe-b3f7-394c17d5ffee",
+      "name": "Chico Eye Center",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "128a34c3-f604-45e7-ac64-5849c8beba84",
+      "name": "Dermatology Specialists, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "525e4871-26ce-4861-867d-f401c6667d4e",
+      "name": "Sacramento Heart & Vascular Medical Associates",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "3c08e012-43c1-4846-af3d-0e5223c936cd",
+      "name": "Digestive Diseases Consultants of Kankakee",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "0a0e5a28-0e09-4a74-b025-eb3ae869b267",
+      "name": "Grand Traverse Ophthalmology Clinic (GTOC)",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "d5fe08d2-88eb-4ce2-bd30-46d898957d74",
+      "name": "Neurological Associates of Long Island, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "a773d1e7-5395-4c66-bd28-cd105945c46f",
+      "name": "Consultants in Sleep & Pulmonary Medicine, PLLC",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "c3577634-c33d-4059-ac3c-7b0821f9b7ec",
+      "name": "Fox Valley Medical Associates, Ltd.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "537e0322-85f9-4a32-976a-840575ca8792",
+      "name": "Regional Orthopedic Professional Association",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "686722a9-fc43-4004-ac8b-af555d196d88",
+      "name": "ENT Specialists, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "d5a8096e-a905-4b7d-9369-e73482840be9",
+      "name": "Vujevich Dermatology Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "4d422e24-0425-4301-921a-25a726822de0",
+      "name": "Princeton Eye Group",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "6d9f0984-6771-47e7-a22d-cb6fe2c89640",
+      "name": "Rockford Urological Associates, Ltd.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "b1253219-72e5-44bc-8b3f-1a31ff5c8ead",
+      "name": "Stoneleigh Medical Group (Westchester Putnam Gastroenterology)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "7b82a511-8b65-415e-a7ff-6751a308e196",
+      "name": "Hunterdon Family Physicians",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "6c486fb1-0929-49b1-9ac4-fdd84ecc0518",
+      "name": "Complete Neurological Care",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "c92b4a7f-db83-4e10-9998-3108543152d6",
+      "name": "Eye Physicians, P.C. (Wills Eye Surgeons)",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "8f5b6057-3236-4b29-8166-40c2d2d405c5",
+      "name": "Lakeshore Primary Care Associates, LLP",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "46917fb7-b2f3-4c23-82be-d28ff731c99e",
+      "name": "Midwest Sinus, Sleep & Allergy Associates",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "da394aba-99f7-4d40-9501-24adeec12859",
+      "name": "Bay Area Family Physicians, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "9df2f1ae-02c6-4903-8fd6-230f8068eb22",
+      "name": "Western Wayne Physicians, PLC",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "34cb9dd3-c62e-45ba-8da6-58cf937b2a86",
+      "name": "Orthopedic Associates, LLC (St. Louis)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "628b9b60-68fc-4349-9771-12dcd72f18fe",
+      "name": "Crystal Lake Clinic, PC",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "c6490d11-764c-47a9-bfb5-3d26d7ff5083",
+      "name": "Total Eye Care Centers",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "b9e538ca-e722-40ff-a26c-68106dc456fe",
+      "name": "Navesink Dermatology (Christopher B. Kruse, M.D., LLC)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "7ea34cde-2d11-44e7-85b2-637b7a671dd7",
+      "name": "Ringpfeil Advanced Dermatology",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "4d809a1e-a152-473a-918a-79542d68819f",
+      "name": "Inspired Health Group (Robert Erickson DO and Jennifer Erickson DO LLC)",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "3de2476a-9735-4f40-9390-706f7b3ef1be",
+      "name": "Ocean Orthopedic Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "06306a93-16fa-4610-aad3-7b504bbffe48",
+      "name": "A Woman's Place, LLC",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "60f6da3b-c532-443c-9951-c93ee0a612c1",
+      "name": "Dermatology Center of Washington Township, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "9d0487ac-d854-4809-9b68-f542c1d47de6",
+      "name": "Ocean Eye Institute, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "7daa5823-6645-41d0-938e-34416a415781",
+      "name": "Corey M. Notis, M.D., P.A. (Associates in Eye Care)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "88a742b3-b91a-4735-8393-ee4ce015546f",
+      "name": "Academy Orthopaedic Group, LLC",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "1a7f2e1c-ac67-4d83-b552-c55ee4fd2db9",
+      "name": "Contemporary Dermatology LLC",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "51a8b08b-cb37-49fc-ad6d-2b276621c92c",
+      "name": "Caring Neurology LLC",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "17cf10db-ac41-4306-9582-63d89484526b",
+      "name": "Advanced Obstetrics & Gynecology, LLC",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "3dc70288-5dc0-4edf-86f1-d51f0db2a6e8",
+      "name": "Ophthalmology NJ LLC (Marano Eye Care)",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "99f78a34-63b6-4d40-bc45-895255716c55",
+      "name": "Paul Phillips Eye & Surgery Center PC",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "98f36464-362d-4e6d-98dd-0467c15f34b8",
+      "name": "Hunterdon Gastroenterology Associates, PA",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "effeac8f-a445-4dbd-b3eb-9fc606865fc1",
+      "name": "Liberty Med Associates LLC",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "2c3c520b-77fc-4eb1-9753-bb35ff8d403f",
+      "name": "MedWell LLC",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "7994ce2c-0b0b-4578-a8fe-e4562b5cecf6",
+      "name": "Morgan Dermatology",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "f878b7e7-97c9-4112-961a-17a3de7b1a7e",
+      "name": "Ocean Family & Geriatric Associates LLC",
+      "status": "ENRICHED",
+      "fitScore": 2
+    },
+    {
+      "companyId": "8fc1d05d-b451-4456-9def-b2a5a40e8c55",
+      "name": "Ocean Pulmonary Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "b198b699-951a-495e-8590-517d81ceae6b",
+      "name": "Northern Ophthalmic Associates",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "dc2cb2cb-0e44-4ccc-b0bd-bcedb2ef5cde",
+      "name": "Moorestown Dermatology Associates, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "360e9b03-8925-4e92-8dbe-f420e3bacfb5",
+      "name": "Monmouth-Ocean Neurology, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "64181ae9-f883-4f14-8b9a-b1d6b98f931e",
+      "name": "Heart & Vascular Center of New Brunswick, LLC (Cardio Metabolic Institute)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "1b39bd0a-5dca-4f1b-8edb-ae6d0982aa0f",
+      "name": "Urology Group, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "d79e55d9-e6eb-4ad6-9a28-5935fcd8875f",
+      "name": "Natural Image Skin Center",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "e4f040a4-6866-42d9-a5fb-80236fba4913",
+      "name": "The Eye Specialists, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "6fd101e2-f153-4e29-b96d-86f8574d37d4",
+      "name": "Eastpointe Medical LLC",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "7c5122f8-3e39-43bd-813a-d7d9e18aa3bb",
+      "name": "Sprains, Strains & Fractures, LLC",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "2cccd424-378b-4606-a017-8413451f132a",
+      "name": "Associated Eye Physicians & Surgeons of N.J., P.A.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "56b75933-ddd2-460a-b003-e63832b4525d",
+      "name": "Jeffrey Farkas MD LLC (Interventional Neuro Associates)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "43a04743-f61d-432e-a9d3-de8297ca72fb",
+      "name": "COV Clinic NJ LLC (HouseCall Doctors NJ / Safely Open Health)",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "756e8506-08de-4059-8b8e-660460e202c2",
+      "name": "Maron & Rodrigues Medical Group LLC",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "7878ede2-c393-4fe5-b615-572e8fa5d265",
+      "name": "Westwood Dermatology and Dermatologic Surgery Group, P.A.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "1e621049-943f-43ca-a825-6dd2a69e40e3",
+      "name": "Gastroenterology Associates of Northern New York, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "4b3df3bc-e693-4630-a498-97257feac1a8",
+      "name": "Albany Obstetrics and Gynecology, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "bd296a79-c519-4335-84d8-bdf3f422bdbc",
+      "name": "Watertown Internists, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "e4058c1d-830d-4998-b6d3-0ba9af449d61",
+      "name": "Albany Eye Associates",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "d71a4290-a415-4b69-a92b-d3a7ad33f943",
+      "name": "Eye Physicians and Surgeons of Western New York PLLC (OcuSight)",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "da2212ef-a47f-49d6-8e61-89df0c26c6db",
+      "name": "South Nassau Dermatology, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "9909b921-78f8-418d-bc3f-27b03315c4d5",
+      "name": "Dermatology Associates of Rochester, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "d0aab5f1-4874-4dc9-95bd-7a970f26c141",
+      "name": "Costello Eye Physicians & Surgeons, PLLC",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "f0076bd8-aeb1-469f-b562-e33ec6f3c915",
+      "name": "Brookhaven Gastroenterology Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "76d3246a-c20e-4402-b9f8-40d8c1398ed3",
+      "name": "Joseph M Capo MD PC (Ear, Nose & Throat Associates of Nassau County)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "1bbc73c4-81b4-4642-a806-59a43b684d19",
+      "name": "Syracuse ENT Surgeons PLLC",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "e5ed3ae2-4b80-48a8-995b-b2fba8b8df6e",
+      "name": "Albany Troy Cataract & Laser Associates",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "46492d90-24d4-4a9e-8ba0-1d8f1de93afe",
+      "name": "Bethlehem Eye Associates",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "f1abe7e5-75bb-47db-8f1f-f6dd432d393b",
+      "name": "Abington Neurological Associates, Ltd.",
+      "status": "ENRICHED",
+      "fitScore": 8
+    },
+    {
+      "companyId": "b99f61cd-995e-4d41-96d9-01e2251e825b",
+      "name": "Suburban Urologic Associates, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "1609de92-e811-4f70-8cf0-ae9e0867a40a",
+      "name": "Harrisburg Gastroenterology, Ltd.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "0b8768a9-2776-4a3c-a180-e29a0131d31d",
+      "name": "Pocono Eye Associates, Inc.",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "45347177-c90e-4caf-93d7-36c22afb651b",
+      "name": "Chalfont Family Practice",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "844939bd-e9d3-4efe-8441-62050880d45f",
+      "name": "ParkWest Women's Health, PC",
+      "status": "ENRICHED",
+      "fitScore": 9
+    },
+    {
+      "companyId": "31787167-7a14-4f5a-b945-82851e9f4ae9",
+      "name": "Greece Dermatological Associates, PC",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "fb345b77-0420-4dd2-bf74-dcc90461ce76",
+      "name": "Eye Care & Vision Associates",
+      "status": "ENRICHED",
+      "fitScore": 7
+    },
+    {
+      "companyId": "c793c0d2-87dc-4ef6-b39f-f27b01d55d45",
+      "name": "Rochester Gastroenterology Associates",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "c6bb5b6c-c377-43ff-9a34-226623c82a7d",
+      "name": "Long Island Spine Specialists, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "263e2b99-967b-4cb6-8be5-ba37a4923bd1",
+      "name": "MDCS Dermatology (Manhattan Dermatology and Cosmetics PLLC)",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "5f327dab-2a64-4124-8505-2481b42cfbb0",
+      "name": "Vitreous Retina Macula Consultants of New York",
+      "status": "ENRICHED",
+      "fitScore": 6
+    },
+    {
+      "companyId": "bd8e6edd-0709-4add-a8a3-546f59fa0181",
+      "name": "Sewickley Eye Center, Ltd. (Sewickley Eye Group)",
+      "status": "ENRICHED",
+      "fitScore": 5
+    },
+    {
+      "companyId": "71098e1c-5586-46c7-a4ad-4e4b6b54cb5d",
+      "name": "Pennsylvania Dermatology Group, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "7085e821-0ad8-4a14-9e81-348d9c0475ed",
+      "name": "Greater Rochester Orthopaedics, PC",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "0f9e64f9-092c-4e3a-b55d-f61e607ed10b",
+      "name": "Dermatology Associates of Lancaster, Ltd.",
+      "status": "ENRICHED",
+      "fitScore": 4
+    },
+    {
+      "companyId": "502057e2-3a45-44c7-8918-e0e93d2738f2",
+      "name": "Dermatology Associates of Plymouth Meeting, P.C.",
+      "status": "ENRICHED",
+      "fitScore": 3
+    },
+    {
+      "companyId": "cecda6c6-f439-4035-868a-bb77b5a14faa",
+      "name": "Bryn Mawr Skin & Cancer Institute (Bryn Mawr Skin and Cancer LLP)",
+      "status": "ENRICHED",
+      "fitScore": 3
+    }
+  ]
+}
