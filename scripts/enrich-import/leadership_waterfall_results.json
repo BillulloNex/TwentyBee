@@ -1,0 +1,142 @@
+{
+  "people": [
+    {
+      "id": "de936275-5cd7-4522-bbda-8ace75467da0",
+      "name": "Cindy Alkire",
+      "email": "calkire@afcak.com",
+      "emailStatus": "VERIFIED_PUBLIC",
+      "source": "Arete Family Care Privacy Official notice (afcak.com)",
+      "status": "ENRICHED"
+    },
+    {
+      "id": "007c2480-8d31-4b7f-a7c3-6d441d92f627",
+      "name": "Daniel C Kim",
+      "email": "d.kim@ruhealth.org",
+      "emailStatus": "VERIFIED_PUBLIC",
+      "source": "Riverside University Health System / UCR directory (ruhealth.org)",
+      "status": "ENRICHED"
+    },
+    {
+      "id": "12d42dcd-00f1-4d0a-a987-b3d8e5c05467",
+      "name": "Pranava Sinha",
+      "email": "Oceanfamily5@outlook.com",
+      "emailStatus": "VERIFIED_PUBLIC",
+      "source": "Ocean Family & Geriatric Associates site (drpsinha.com)",
+      "status": "ENRICHED"
+    },
+    {
+      "id": "c27d1fe2-4cd9-453c-811e-fbf4ca719d63",
+      "name": "Merlin Bardett Fausett",
+      "email": "hello@originhealth.com",
+      "emailStatus": "VERIFIED_PUBLIC",
+      "source": "Origin Health practice contact (originhealth.com)",
+      "status": "ENRICHED"
+    },
+    {
+      "id": "34648e1e-179b-4c81-a218-7fdd6b4f5482",
+      "name": "Manoucher Shahab",
+      "email": "painfree@medwellnj.com",
+      "emailStatus": "VERIFIED_PUBLIC",
+      "source": "MedWell Center official contact (medwellnj.com)",
+      "status": "ENRICHED"
+    },
+    {
+      "id": "514d34e3-bc26-4a8c-9a94-8aab1dd5fa3a",
+      "name": "Aboo Nasar",
+      "email": "info@delsurhealthcare.com",
+      "emailStatus": "VERIFIED_PUBLIC",
+      "source": "Del Sur Healthcare contact (delsurhealthcare.com)",
+      "status": "ENRICHED"
+    },
+    {
+      "id": "12aee613-53af-44b2-9f7e-21dad38b3681",
+      "name": "Ferdinand J Panoussi",
+      "email": "info@uhaclinic.com",
+      "emailStatus": "VERIFIED_PUBLIC",
+      "source": "Unified Health Associates contact (uhaclinic.com)",
+      "status": "ENRICHED"
+    },
+    {
+      "id": "d5b0d14f-3e81-4219-bc94-8b7389e9aad5",
+      "name": "Tommy Wan",
+      "email": "frontdesk@uhaclinic.com",
+      "emailStatus": "VERIFIED_PUBLIC",
+      "source": "Unified Health Associates contact (uhaclinic.com)",
+      "status": "ENRICHED"
+    }
+  ],
+  "companies": [
+    {
+      "id": "5db3fc55-0677-4450-9d90-10ca997bdb50",
+      "name": "Arete Family Care",
+      "domain": "afcak.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "2c3c520b-77fc-4eb1-9753-bb35ff8d403f",
+      "name": "MedWell LLC",
+      "domain": "medwellnj.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "f61f8d32-8622-4679-8c35-2f35abd5734e",
+      "name": "Origin Health",
+      "domain": "originhealth.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "657f7e7e-b349-4015-81d1-5e3618b0e123",
+      "name": "Palm Valley Multi-Specialty Medical Group",
+      "domain": "palmvalleymedicalgroup.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "2b4fb330-6318-447e-9936-1682f9d4cfe8",
+      "name": "Ophthalmic Associates (Anchorage)",
+      "domain": "akeyedoc.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "d91995de-afb3-4f09-ad21-39820e0cd4cb",
+      "name": "Island Orthopaedics",
+      "domain": "islandorthopaedics.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "1b0db819-d8dd-4509-bb6d-cfca7f69e6a4",
+      "name": "Pearl City Medical Associates",
+      "domain": "pearlcitymedical.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "dea09860-4342-4929-ab08-549114ff8919",
+      "name": "Horizon Multicare Group",
+      "domain": "uhaclinic.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "628b9b60-68fc-4349-9771-12dcd72f18fe",
+      "name": "Crystal Lake Clinic, PC",
+      "domain": "crystallakehealthcenters.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "f878b7e7-97c9-4112-961a-17a3de7b1a7e",
+      "name": "Ocean Family & Geriatric Associates LLC",
+      "domain": "drpsinha.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "e5ed3ae2-4b80-48a8-995b-b2fba8b8df6e",
+      "name": "Albany Troy Cataract & Laser Associates",
+      "domain": "ophthalmicconsultants.com",
+      "status": "UPDATED"
+    },
+    {
+      "id": "df4f2151-dd3a-4e43-8868-7c6e7e1dd6d7",
+      "name": "Del Sur Healthcare",
+      "domain": "delsurhealthcare.com",
+      "status": "UPDATED"
+    }
+  ]
+}
