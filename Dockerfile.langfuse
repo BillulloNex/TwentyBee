@@ -7,10 +7,14 @@ FROM twentycrm/twenty:latest
 WORKDIR /app
 
 # Install Langfuse + OTel dependencies
-RUN yarn add @langfuse/otel@^5.11.1 \
-             @langfuse/vercel-ai-sdk@^5.11.1 \
-             @opentelemetry/sdk-trace-node@^2.11.0 \
-    && yarn cache clean
+# NOTE: Using npm instead of yarn because the Twenty production image's Yarn
+# workspace graph references twenty-oxlint-rules@workspace:* which doesn't
+# exist in the container, causing yarn add to fail during resolution.
+RUN npm install --no-save \
+      @langfuse/otel@^5.11.1 \
+      @langfuse/vercel-ai-sdk@^5.11.1 \
+      @opentelemetry/sdk-trace-node@^2.11.0 \
+    && npm cache clean --force
 
 # Copy the Langfuse bootstrap that registers the span processor at startup.
 # This runs via NODE_OPTIONS=--require so it executes before any app code.
