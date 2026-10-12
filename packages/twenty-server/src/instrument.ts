@@ -10,7 +10,10 @@ import {
   MeterProvider,
   PeriodicExportingMetricReader,
 } from '@opentelemetry/sdk-metrics';
-import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
+import {
+  AlwaysOnSampler,
+  NodeTracerProvider,
+} from '@opentelemetry/sdk-trace-node';
 import { isNonEmptyString } from '@sniptt/guards';
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
@@ -145,32 +148,47 @@ if (isNonEmptyString(process.env.LANGFUSE_SECRET_KEY)) {
     import('@langfuse/otel'),
     import('@langfuse/vercel-ai-sdk'),
     import('ai'),
-  ]).then(([{ LangfuseSpanProcessor }, { LangfuseVercelAiSdkIntegration }, { registerTelemetry }]) => {
-    const langfuseProcessor = new LangfuseSpanProcessor({
-      secretKey: process.env.LANGFUSE_SECRET_KEY!,
-      publicKey: process.env.LANGFUSE_PUBLIC_KEY,
-      baseUrl:
-        process.env.LANGFUSE_BASE_URL ?? 'https://cloud.langfuse.com',
+  ])
+    .then(
+      ([
+        { LangfuseSpanProcessor },
+        { LangfuseVercelAiSdkIntegration },
+        { registerTelemetry },
+      ]) => {
+        const tracerProvider = new NodeTracerProvider({
+          resource: resourceFromAttributes({
+            'service.name': process.env.OTEL_SERVICE_NAME ?? 'twenty-server',
+            'k8s.pod.name': POD_NAME,
+          }),
+          // The default sampler follows the parent span, which would drop AI spans started under a Sentry trace that was sampled out
+          sampler: new AlwaysOnSampler(),
+          spanProcessors: [
+            new LangfuseSpanProcessor({
+              secretKey: process.env.LANGFUSE_SECRET_KEY,
+              publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+              baseUrl:
+                process.env.LANGFUSE_BASE_URL ?? 'https://cloud.langfuse.com',
+            }),
+          ],
+        });
+
+        tracerProvider.register();
+
+        // Sentry owns the global tracer provider when it is enabled, so the integration gets this provider's tracer explicitly
+        registerTelemetry(
+          new LangfuseVercelAiSdkIntegration({
+            tracer: tracerProvider.getTracer('langfuse'),
+          }),
+        );
+
+        // eslint-disable-next-line no-console
+        console.log('[Langfuse] AI observability enabled');
+      },
+    )
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.warn('[Langfuse] Failed to initialise AI observability:', error);
     });
-
-    const tracerProvider = new NodeTracerProvider({
-      resource: resourceFromAttributes({
-        'service.name': process.env.OTEL_SERVICE_NAME ?? 'twenty-server',
-        'k8s.pod.name': POD_NAME,
-      }),
-    });
-
-    tracerProvider.addSpanProcessor(langfuseProcessor);
-    tracerProvider.register();
-
-    registerTelemetry(new LangfuseVercelAiSdkIntegration());
-
-    // eslint-disable-next-line no-console
-    console.log('[Langfuse] AI observability enabled');
-  }).catch((error) => {
-    // eslint-disable-next-line no-console
-    console.warn('[Langfuse] Failed to initialise AI observability:', error);
-  });
 }
 
 const prometheusExporter = meterDrivers.includes(MeterDriver.Prometheus)

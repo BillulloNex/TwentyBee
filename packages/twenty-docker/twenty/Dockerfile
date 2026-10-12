@@ -208,40 +208,7 @@ RUN apk add --no-cache npm \
  && apk del npm \
  && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
-# Create Langfuse bootstrap script inline
-RUN cat > /app/langfuse-bootstrap.cjs <<'LANGFUSE_EOF'
-'use strict';
-if (process.env.LANGFUSE_SECRET_KEY) {
-  try {
-    const { LangfuseSpanProcessor } = require('@langfuse/otel');
-    const { LangfuseVercelAiSdkIntegration } = require('@langfuse/vercel-ai-sdk');
-    const { registerTelemetry } = require('ai');
-    const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-    const { resourceFromAttributes } = require('@opentelemetry/resources');
-    const lp = new LangfuseSpanProcessor({
-      secretKey: process.env.LANGFUSE_SECRET_KEY,
-      publicKey: process.env.LANGFUSE_PUBLIC_KEY,
-      baseUrl: process.env.LANGFUSE_BASE_URL || 'https://cloud.langfuse.com',
-    });
-    const tp = new NodeTracerProvider({
-      resource: resourceFromAttributes({
-        'service.name': process.env.OTEL_SERVICE_NAME || 'twentybee-server',
-      }),
-    });
-    tp.addSpanProcessor(lp);
-    tp.register();
-    registerTelemetry(new LangfuseVercelAiSdkIntegration());
-    console.log('[Langfuse] AI observability enabled');
-  } catch (e) {
-    console.warn('[Langfuse] Failed to initialise:', e.message);
-  }
-}
-LANGFUSE_EOF
-
-RUN chown 1000:1000 /app/langfuse-bootstrap.cjs
-
-ENV NODE_OPTIONS="--require /app/langfuse-bootstrap.cjs"
-
+# Langfuse itself is initialised by the server (src/instrument.ts) when LANGFUSE_SECRET_KEY is set
 USER 1000
 
 LABEL org.opencontainers.image.description="TwentyBee — Twenty CRM with Langfuse AI observability."
