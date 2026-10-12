@@ -1,11 +1,7 @@
 import { isDefined } from 'twenty-shared/utils';
-import {
-  WORKFLOW_TRIGGER_METADATA_KEY,
-  WORKFLOW_TRIGGER_METADATA_WORKSPACE_MEMBER_ID_KEY,
-  WORKFLOW_TRIGGER_PAYLOAD_KEY,
-} from 'twenty-shared/workflow';
 
 import { buildCreatedByFromFullNameMetadata } from 'src/engine/core-modules/actor/utils/build-created-by-from-full-name-metadata.util';
+import { buildWorkflowRunTriggerPayload } from 'src/modules/workflow/workflow-trigger/utils/build-workflow-run-trigger-payload.util';
 import { type WorkspaceMemberWorkspaceEntity } from 'src/modules/workspace-member/standard-objects/workspace-member.workspace-entity';
 
 export const buildWorkflowRunTriggerContext = ({
@@ -17,13 +13,10 @@ export const buildWorkflowRunTriggerContext = ({
   payload?: object | null;
   startingApplicationId?: string;
 }) => ({
-  payload: {
-    ...payload,
-    [WORKFLOW_TRIGGER_PAYLOAD_KEY]: { ...payload },
-    [WORKFLOW_TRIGGER_METADATA_KEY]: {
-      [WORKFLOW_TRIGGER_METADATA_WORKSPACE_MEMBER_ID_KEY]: workspaceMember.id,
-    },
-  },
+  payload: buildWorkflowRunTriggerPayload({
+    workspaceMemberId: workspaceMember.id,
+    payload,
+  }),
   createdBy: {
     ...buildCreatedByFromFullNameMetadata({
       fullNameMetadata: {
