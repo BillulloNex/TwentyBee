@@ -196,21 +196,7 @@ LABEL org.opencontainers.image.description="Twenty image with backend and fronte
 
 FROM twenty AS twentybee
 
-USER root
-
-# Reinstall npm (removed in twenty-server stage), install Langfuse, then clean up
-RUN apk add --no-cache npm \
- && npm install --no-save \
-      @langfuse/otel@^5.11.1 \
-      @langfuse/vercel-ai-sdk@^5.11.1 \
-      @opentelemetry/sdk-trace-node@^2.11.0 \
- && npm cache clean --force \
- && apk del npm \
- && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
-
-# Langfuse itself is initialised by the server (src/instrument.ts) when LANGFUSE_SECRET_KEY is set
-USER 1000
-
+# Langfuse ships as regular twenty-server dependencies and is started by src/instrument.ts when LANGFUSE_SECRET_KEY is set
 LABEL org.opencontainers.image.description="TwentyBee — Twenty CRM with Langfuse AI observability."
 
 
