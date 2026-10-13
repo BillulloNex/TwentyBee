@@ -3,3 +3,5 @@ data/
 
 # Import state files (can be very large)
 state/*.ndjson
+state/*.log
+state/heartbeat.json

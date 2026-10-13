@@ -1,7 +1,6 @@
 // Phase 5: Enrich People with NPPES data — address, taxonomy codes, license info.
-// Streams the 11 GB extracted NPPES CSV, cross-references with imported people
-// by NPI, and patches missing fields + adds taxonomy/license data.
-// Serial PATCHes at 650ms intervals to stay under 100 req/60s API limit.
+// Uses GraphQL mutations (no rate limit!) with 10 concurrent requests.
+// Streams the 11 GB extracted NPPES CSV, cross-references by NPI.
 
 import { createLogger } from '../lib/logger.mjs';
 import { loadProgress, saveProgress, loadNdjsonMap } from '../lib/state.mjs';
@@ -11,7 +10,8 @@ import { DATA_FILES, TWENTY_BASE_URL, TWENTY_API_KEY } from '../config.mjs';
 
 const log = createLogger('enrich');
 
-const PATCH_INTERVAL_MS = 650; // 92 req/min — safely under 100/60s API limit
+const CONCURRENCY = 10;  // Concurrent GraphQL mutations
+const GRAPHQL_URL = `${TWENTY_BASE_URL}/graphql`;
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -36,24 +36,29 @@ function formatZip(raw) {
   return zip.padStart(5, '0');
 }
 
-// Patch a person with retry on 429/5xx/network errors
-async function patchPerson(twentyId, updates) {
-  const url = `${TWENTY_BASE_URL}/rest/people/${twentyId}`;
+// ---------- GraphQL mutation engine ----------
+
+async function graphqlUpdatePerson(twentyId, updates) {
+  // Build GraphQL data input fields
+  const fields = Object.entries(updates)
+    .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
+    .join(', ');
+
+  const query = `mutation { updatePerson(id: "${twentyId}", data: { ${fields} }) { id } }`;
 
   for (let attempt = 1; attempt <= 5; attempt++) {
     try {
-      const res = await fetch(url, {
-        method: 'PATCH',
+      const res = await fetch(GRAPHQL_URL, {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${TWENTY_API_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updates),
+        body: JSON.stringify({ query }),
       });
 
       if (res.status === 429) {
-        const retryAfter = parseInt(res.headers.get('retry-after') || '5', 10);
-        const waitMs = Math.max(retryAfter * 1000, 5000 * attempt);
+        const waitMs = 5000 * attempt;
         if (attempt < 5) { await sleep(waitMs); continue; }
         throw new Error(`Rate limited after ${attempt} retries`);
       }
@@ -67,6 +72,11 @@ async function patchPerson(twentyId, updates) {
         const text = await res.text().catch(() => '(no body)');
         throw new Error(`${res.status}: ${text.slice(0, 200)}`);
       }
+
+      const json = await res.json();
+      if (json.errors?.length) {
+        throw new Error(json.errors[0].message.slice(0, 200));
+      }
       return true;
     } catch (err) {
       if (attempt < 5 && (err.cause?.code === 'ECONNRESET' || err.message?.includes('fetch failed'))) {
@@ -77,6 +87,24 @@ async function patchPerson(twentyId, updates) {
     }
   }
 }
+
+// Process a batch of items concurrently
+async function processBatch(batch, stats) {
+  const promises = batch.map(async (item) => {
+    try {
+      await graphqlUpdatePerson(item.twentyId, item.updates);
+      stats.enriched++;
+    } catch (err) {
+      stats.errors++;
+      if (stats.errors <= 10 || stats.errors % 1000 === 0) {
+        log.warn(`  Patch failed NPI ${item.npi}: ${err.message.slice(0, 150)}`);
+      }
+    }
+  });
+  await Promise.all(promises);
+}
+
+// ---------- Build updates ----------
 
 function buildUpdates(record) {
   const updates = {};
@@ -118,6 +146,8 @@ function buildUpdates(record) {
   return Object.keys(updates).length > 0 ? updates : null;
 }
 
+// ---------- Main ----------
+
 export async function run() {
   const progress = loadProgress();
 
@@ -138,13 +168,13 @@ export async function run() {
   const nppesExtractedPath = resolve(dirname(DATA_FILES.nppesZip), DATA_FILES.nppesMainFile);
   log.info('Streaming extracted NPPES CSV for enrichment...');
   log.info(`  CSV: ${nppesExtractedPath}`);
-  log.info(`  Pace: 1 PATCH every ${PATCH_INTERVAL_MS}ms (~${Math.floor(60000 / PATCH_INTERVAL_MS)} req/min)`);
+  log.info(`  Mode: GraphQL mutations, ${CONCURRENCY} concurrent`);
 
+  const stats = { enriched: 0, errors: 0 };
   let matched = 0;
-  let enriched = 0;
   let processed = 0;
-  let errors = 0;
-  let lastPatchTime = 0;
+  let pendingBatch = [];
+  const startTime = Date.now();
 
   try {
     await streamCsv(
@@ -158,10 +188,11 @@ export async function run() {
 
         if (processed % 10000 === 0) {
           progress.enrich.nppesProcessed = processed;
-          progress.enrich.enrichedPeople = enriched;
+          progress.enrich.enrichedPeople = stats.enriched;
           saveProgress();
-          const rate = enriched > 0 ? (enriched / ((Date.now() - lastPatchTime) / 60000 + 0.001)).toFixed(0) : '?';
-          log.progress(processed, 8000000, `enriched: ${enriched.toLocaleString()}, errors: ${errors}, ~${rate}/min`);
+          const elapsedMin = (Date.now() - startTime) / 60000;
+          const rate = elapsedMin > 0.1 ? Math.round(stats.enriched / elapsedMin) : 0;
+          log.progress(processed, 8000000, `enriched: ${stats.enriched.toLocaleString()}, errors: ${stats.errors}, ${rate}/min`);
         }
 
         if (record['Entity Type Code'] !== '1') return;
@@ -176,33 +207,26 @@ export async function run() {
         matched++;
         if (matched === 1) {
           log.info(`  First match: NPI=${npi}, twentyId=${person.twentyId}`);
-          lastPatchTime = Date.now();
         }
 
-        // Throttle: ensure PATCH_INTERVAL_MS between requests
-        const elapsed = Date.now() - lastPatchTime;
-        if (elapsed < PATCH_INTERVAL_MS) {
-          await sleep(PATCH_INTERVAL_MS - elapsed);
-        }
+        pendingBatch.push({ twentyId: person.twentyId, updates, npi });
 
-        try {
-          await patchPerson(person.twentyId, updates);
-          enriched++;
-        } catch (err) {
-          errors++;
-          if (errors <= 5 || errors % 1000 === 0) {
-            log.warn(`  Patch failed NPI ${npi}: ${err.message.slice(0, 150)}`);
-          }
+        if (pendingBatch.length >= CONCURRENCY) {
+          await processBatch(pendingBatch, stats);
+          pendingBatch = [];
         }
-
-        lastPatchTime = Date.now();
       },
       { startOffset: progress.enrich.nppesProcessed || 0 }
     );
+
+    // Flush remaining
+    if (pendingBatch.length > 0) {
+      await processBatch(pendingBatch, stats);
+    }
   } catch (err) {
     log.error(`NPPES stream error: ${err.message}`);
     progress.enrich.nppesProcessed = processed;
-    progress.enrich.enrichedPeople = enriched;
+    progress.enrich.enrichedPeople = stats.enriched;
     saveProgress();
     throw err;
   }
@@ -210,9 +234,9 @@ export async function run() {
   log.progressDone();
   progress.enrich.done = true;
   progress.enrich.nppesProcessed = processed;
-  progress.enrich.enrichedPeople = enriched;
+  progress.enrich.enrichedPeople = stats.enriched;
   progress.currentPhase = 'affiliations';
   saveProgress();
 
-  log.ok(`Enrichment complete — ${matched.toLocaleString()} matched, ${enriched.toLocaleString()} enriched, ${errors.toLocaleString()} errors out of ${processed.toLocaleString()} NPPES records`);
+  log.ok(`Enrichment complete — ${matched.toLocaleString()} matched, ${stats.enriched.toLocaleString()} enriched, ${stats.errors.toLocaleString()} errors out of ${processed.toLocaleString()} NPPES records`);
 }

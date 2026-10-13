@@ -70,3 +70,8 @@ screenshots/
 /.diag*.mjs
 /.compare*.mjs
 /.narrow*.mjs
+/scratch/
+
+# Large CMS raw archives (>50MB / Git LFS)
+scripts/cms-opt-out-oct-26/*.zip
+scripts/cms-opt-out-oct-26/extracted/

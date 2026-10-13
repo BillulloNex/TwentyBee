@@ -1,5 +1,5 @@
 {
-  "currentPhase": "enrich",
+  "currentPhase": "affiliations",
   "schema": {
     "completed": true
   },
@@ -93,15 +93,15 @@
     "skippedDupes": 1761230
   },
   "enrich": {
-    "done": false,
-    "nppesProcessed": 20000,
-    "enrichedPeople": 6495
+    "done": true,
+    "nppesProcessed": 9706865,
+    "enrichedPeople": 1134694
   },
   "affiliations": {
     "done": false,
-    "created": 0,
-    "processed": 0,
+    "created": 137200,
+    "processed": 173431,
     "offset": 0
   },
-  "lastSavedAt": "2026-10-10T02:59:00.773Z"
+  "lastSavedAt": "2026-10-12T12:22:19.920Z"
 }

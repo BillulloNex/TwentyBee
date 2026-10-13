@@ -1,0 +1,413 @@
+{
+  "mode": "LIVE",
+  "timestamp": "2026-10-13T16:43:14.245Z",
+  "summary": {
+    "total": 50,
+    "patched": 50,
+    "skippedHasNpi": 0,
+    "skippedNotFound": 0,
+    "errors": 0
+  },
+  "entries": [
+    {
+      "twentyId": "dcfaa773-449e-4945-8d38-78a33d243e5a",
+      "npi": "1154845568",
+      "name": "Melissa Grant",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "3d3c64db-a0fa-4c0e-a6a8-a5b72dc43efb",
+      "npi": "1558386227",
+      "name": "William Beliveau",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "1bd10fde-fc0f-4b97-aed7-88e7f592cee3",
+      "npi": "1548291891",
+      "name": "Robert Scacheri",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "0591c288-1551-4838-a706-6a87aec31af0",
+      "npi": "1962508887",
+      "name": "Andrew Mowery",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "1b811bbb-347f-48bf-8c73-7e7be57e6275",
+      "npi": "1326121435",
+      "name": "Maral Skelsey",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "501cf51d-eca9-427e-80ba-45b194f571bb",
+      "npi": "1730206491",
+      "name": "Avraham Almozlino",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "5dc91cc6-6dd1-4da8-9a78-f410c1ed74fc",
+      "npi": "1831304237",
+      "name": "Edwin Radke",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "9fcc6a5e-6a15-4a52-b6ac-c80aa8765f96",
+      "npi": "1952914681",
+      "name": "Rohit Sharma",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "9437cca9-6d70-403f-8b1e-35b8d91b0841",
+      "npi": "1275060303",
+      "name": "Rohit Kashyap",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "0e261add-9c57-422b-9cf0-b4d944b1aee8",
+      "npi": "1932202959",
+      "name": "Ashit Jain",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "050996f5-f374-4794-b8dd-b5d2b1cd4a49",
+      "npi": "1770344186",
+      "name": "Pedram Ilbeigi",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "3d3b72ec-d115-418d-9da0-450efe168d54",
+      "npi": "1679131114",
+      "name": "David Friedberg",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "65265426-1681-459e-b3d4-08261cec5754",
+      "npi": "1558518753",
+      "name": "Mehran Moussavian",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "e64a82d7-2f41-4f3b-a2d0-21396408c32d",
+      "npi": "1407304439",
+      "name": "Hrayr Basmajian",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "73f37436-4072-4141-8ff6-4d5a0766d03e",
+      "npi": "1245290899",
+      "name": "Lester Randall Mohler",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "514d34e3-bc26-4a8c-9a94-8aab1dd5fa3a",
+      "npi": "1891515953",
+      "name": "Aboo Nasar",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "de8762a6-b524-48f3-88d0-04d3d9779394",
+      "npi": "1689458416",
+      "name": "Ali Rashidian",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "5cfdbe78-4667-448e-8e10-9a8658d79526",
+      "npi": "1730370156",
+      "name": "Isaac Wiener",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "2fe74fc3-7ccc-4d6e-b00e-578674787b6a",
+      "npi": "1881631711",
+      "name": "Jane Lisk",
+      "source": "update",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "07440d96-8aeb-4fe5-8615-11aadf8c28f7",
+      "npi": "1659775575",
+      "name": "Andre D'Hemecourt",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "6da1dd42-7f48-4dd4-8bcb-40e38da6cff6",
+      "npi": "1073736310",
+      "name": "Sonya Merritt",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "f19c46a4-79f0-4fce-85ef-02f645f6521c",
+      "npi": "1386685881",
+      "name": "Barry Jacobs",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "f6c50029-4ea8-42a6-a506-6cfdaa2b2ca2",
+      "npi": "1245258466",
+      "name": "Brenda Bosma",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "706a2876-1c61-498d-a201-711c53a05bb9",
+      "npi": "1881698389",
+      "name": "Thomas Burke",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "f3b56003-4d22-4c46-a91e-636248c7ddea",
+      "npi": "1972695435",
+      "name": "Tom Corcoran",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "ea6c2b58-5f3a-4075-a774-2b0ebc1d476f",
+      "npi": "1033117718",
+      "name": "Clete Clark",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "8dc71e72-168e-4f21-87f7-9fd53b6b0e8b",
+      "npi": "1942268198",
+      "name": "Brian O'Keefe",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "852ac031-0300-4df9-a065-e520dcb8886d",
+      "npi": "1295626364",
+      "name": "Ivette McNeace",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "0ef0c187-2887-4cfe-9c8e-0aaf1814ea4b",
+      "npi": "1649435694",
+      "name": "Kevin Hogan",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "e22e0bcd-72a8-46a0-b92d-b8e0e680f1f4",
+      "npi": "1376586354",
+      "name": "Mary Lou Hansen",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "afa5fef7-9257-46cc-968c-90cacb49bad7",
+      "npi": "1376177790",
+      "name": "John Johnson",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "c2cb094b-c9e2-41f5-9eb3-9e31e7cf7f29",
+      "npi": "1144269077",
+      "name": "Belinda DiPillo",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "1fcc42a2-10af-4714-9430-822aa7f5a13a",
+      "npi": "1255382545",
+      "name": "Loretto Gonzalez",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "f3af67cb-27d6-4002-aacf-caf21ecc16f2",
+      "npi": "1073703377",
+      "name": "Ismael Silva",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "9f993ca0-3996-4423-9953-01910d812a96",
+      "npi": "1700821691",
+      "name": "David Goble",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "cd8a2f03-29e7-487d-a387-b971e85585d1",
+      "npi": "1205934783",
+      "name": "Elizabeth Gonzalez",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "4da1d600-578a-46f0-aa88-18c3508b16b2",
+      "npi": "1134557655",
+      "name": "David S. Kim",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "09c2fe73-ca80-4c37-a0c5-bc095ce31c79",
+      "npi": "1497758155",
+      "name": "Nina Li",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "0d9e0b2e-ae04-4d4f-ab48-1fdf3bcdb04d",
+      "npi": "1235108077",
+      "name": "Dyanna Johnson",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "d63a3a86-61e8-4519-9f2a-3f606cab2f01",
+      "npi": "1821031741",
+      "name": "Christopher Finkemeier",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "98e3b0c1-01b6-4013-9cd4-aec109560a4d",
+      "npi": "1689997090",
+      "name": "Pam Cordero",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "1d37d653-9b2a-4a67-811f-09b1cd994456",
+      "npi": "1801980446",
+      "name": "Janet Hake",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "cd9adf9b-986a-4b85-a8fc-8d5a5b8bf4f3",
+      "npi": "1124032461",
+      "name": "Daniel Kim",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "aa9b0cae-e16c-4766-83d3-b7ad671f2f65",
+      "npi": "1528401783",
+      "name": "Kasra Rowshan",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "d390b667-84f8-4bdd-8d86-5279e3723883",
+      "npi": "1588072698",
+      "name": "Roger Gallant",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "7018c93a-5cd6-479d-ac85-cae9d2c397cb",
+      "npi": "1659420495",
+      "name": "Grace Huynh",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "d76309d4-d874-4d6a-bcdb-081551a10fc4",
+      "npi": "1376641449",
+      "name": "Phil Janke",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "ec22d839-7324-4540-903b-cabd50f111b4",
+      "npi": "1811349210",
+      "name": "Deborah Kelly",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "d81a8d5c-2ea0-467b-b2a3-44a1f7b5adf4",
+      "npi": "1093756496",
+      "name": "Pablo Arregui",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    },
+    {
+      "twentyId": "fcdda5ea-a36a-4a9a-8653-3b87f1f81f20",
+      "npi": "1992977672",
+      "name": "Gabrielle Caston",
+      "source": "create",
+      "action": "PATCHED",
+      "currentName": ""
+    }
+  ]
+}
