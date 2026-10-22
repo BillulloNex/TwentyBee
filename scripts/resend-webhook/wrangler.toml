@@ -1,0 +1,9 @@
+name = "resend-inbound-webhook"
+main = "worker.ts"
+compatibility_date = "2024-12-01"
+
+[vars]
+TWENTY_API_URL = "https://20.beenex.cloud/graphql"
+
+# Set these as secrets via: wrangler secret put TWENTY_API_TOKEN
+# and: wrangler secret put RESEND_WEBHOOK_SECRET
