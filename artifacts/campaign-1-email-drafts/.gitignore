@@ -1,0 +1,3 @@
+# Keep prospect drafts local until they are deliberately shared.
+*
+!.gitignore

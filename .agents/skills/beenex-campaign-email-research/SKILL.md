@@ -1,19 +1,21 @@
 ---
 name: beenex-campaign-email-research
-description: Research a BeeNex Campaign 1 prospect, choose an honest proof link, and write personalized Day 0, Day 4, and Day 10 outreach from the Twenty CRM templates. Use for prospect-specific email drafts or cohort email fields, not for sending messages.
+description: Research a BeeNex Campaign 1 prospect, choose an honest proof link, and stage personalized Day 0, Day 4, and Day 10 emails as Markdown for Codex review before any Twenty CRM update. Use for prospect-specific outreach drafting, not sending.
 ---
 
 # BeeNex campaign email research
 
 Produce three short, ready-to-review emails that make one plausible workflow relevant to the **specific recipient**. The Twenty templates define each email's job; their brackets are research prompts, not wording to fill mechanically. Preserve the user's requested offer, cadence, sender, and AI emphasis when adapting them.
 
+**Two roles:** A producing agent researches and writes a local draft. The primary Codex assistant reviews that draft and is the only role that may copy approved emails into `20.beenex.cloud`. A draft file is not approval. Producing agents use Twenty for read-only lookup and never update cohort records or send email.
+
 ## 1. Identify the recipient and template
 
 1. In Twenty, find the exact cohort record, including alternate spellings and other cohort objects when needed. Read its existing placeholders and email fields. Match the full name, practice, specialty, and role against the practice's own website. If more than one person fits, resolve identity before personalizing or writing to CRM.
 2. Read the **current** `Campaign 1 Email Templates` records for Day 0 with proof, Day 0 concise, Day 4, and Day 10. Use their intended sequence and current sender/CTA. Treat a previously drafted revision as current only if the user points to it or it is stored in the target record.
-3. Check whether the requested action is a draft, a CRM field update, or an actual send. Drafting and saving are separate. Sending requires explicit authorization.
+3. Confirm the target cohort and record ID for the draft file. If CRM access is unavailable, record the unresolved identity or record ID and continue only with research that can be verified. Sending requires separate explicit authorization and is outside this skill.
 
-**Done when:** one recipient, one practice, one intended sequence, and the destination fields (if any) are unambiguous. CRM spelling and placeholders are leads, not proof of public claims.
+**Done when:** one recipient, one practice, and one intended sequence are clear; any unresolved CRM target is recorded as a publication blocker. CRM spelling and placeholders are leads, not proof of public claims.
 
 ## 2. Research one narrow workflow
 
@@ -53,10 +55,20 @@ If a relevant proof page exists, place it in Day 0 so the first email has a conc
 
 Write like a person addressing a busy operator: plain words, short paragraphs, no generic praise, jargon, or grand AI claims. Use the recipient's preferred professional name. A link should be a usable URL in a plain-text CRM field. If the sender treats a field as body-only, keep the subject outside that body; inspect the field's downstream use before saving.
 
-## 5. Check and deliver
+## 5. Check and stage the draft
 
-Before presenting or saving, read every sentence against the evidence ledger. Remove unsupported facts, implied diagnoses of the practice, invented metrics, stale locations, and claims that a design was deployed. Confirm that the first email's proof and the proposed use case genuinely connect. Ensure every bracket is resolved or the unsupported sentence is removed. Check the recipient name, link destination, sender, CTA, and that the three emails progress rather than repeat.
+Before presenting or saving, read every sentence against the evidence ledger. Remove unsupported facts, implied diagnoses of the practice, invented metrics, stale locations, and claims that a design was deployed. Confirm that the first email's proof and the proposed use case genuinely connect. Replace every template instruction, sample URL, date marker, and unresolved bracket. Check the recipient name, link destination, sender, CTA, and that the three emails progress rather than repeat.
 
-Return the placeholder mapping, selected URL and fit rationale, any material unknown, and the three complete emails. Keep source links beside the factual claims in the explanation; the email itself needs only the chosen proof link.
+Use [the Markdown draft template](assets/draft-template.md) and save **one file per prospect** under `artifacts/campaign-1-email-drafts/pending/`. Name it `<cohort-object>--<full-record-id>.md`; if the ID is unresolved, use a clear name slug and mark the ID unresolved inside. Fill every template section, including the evidence links, case-fit rationale, subject/body for each day, unknowns, and `review_status: pending_codex_review`. Keep source links beside factual claims in the evidence section; the emails themselves need only the chosen proof link. Reopen an existing pending file before revising it so work from another agent is not lost.
 
-When the user asks to save in Twenty: read the exact record and current field values; update only `day0Email`, `day4Email`, and `day10Email` on that record; then read all three fields back. If the named cohort conflicts with the person's actual location, resolve the target before writing. Report the verified record and fields. Do not create or change templates or send emails unless requested.
+The dedicated draft directory is local and Git-ignored because prospect research and draft outreach should not be published in the repository by accident. Tell the user or primary Codex assistant the absolute path to the pending file. If the producer and reviewer do not share a filesystem, hand over the Markdown file itself. Do not mark your own draft approved or write its copy to Twenty.
+
+**Done when:** the pending file exists, has all three emails, and another reviewer can trace every material claim to its source without repeating the research from scratch.
+
+## 6. Codex review gate and CRM handoff
+
+Only the primary Codex assistant handles this step. Read the pending Markdown and independently check recipient identity, current prospect sources, the case-study page and its delivery status, each claim in the emails, the proposed use-case fit, link behavior, and sequence quality. Correct the copy or return it for revision. On approval, set `review_status: approved_for_twenty`, fill `reviewed_by` and `reviewed_at`, record review notes, and move the file to `artifacts/campaign-1-email-drafts/approved/`. For a return, set `review_status: needs_revision` and leave it pending. The filename and record ID must still refer to the same person after review.
+
+After approval, follow the task's publishing scope. If the user assigned this prospect for the Campaign 1 draft-review-CRM workflow, approval is the final gate: proceed with the Twenty save without asking again. If the request was draft-only, stop at the approved Markdown. Do not process unrelated pending files merely because they exist. Before saving, inspect the exact record's existing values and how its email fields are consumed. If a field already contains materially different copy, resolve whether to replace it before writing. Copy only the approved subject/body text into the intended `day0Email`, `day4Email`, and `day10Email` fields, using plain URLs where those fields are plain text. Update all three fields in one record operation and read them back. On an exact match, set `review_status: synced_to_twenty`, fill `twenty_saved_at`, and record the CRM result in the approved file. If review fails, do not write; if a write or readback fails, report the actual CRM state and repair it before marking the file synced. No agent sends the emails as part of this workflow.
+
+**Done when:** the review decision is recorded, and any authorized CRM update has been read back from the correct record. A producer's completed draft alone never satisfies this gate.
