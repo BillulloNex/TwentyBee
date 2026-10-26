@@ -1,8 +1,8 @@
 ---
 campaign: Campaign 1
-cohort_object: "campaign1CohortThree"
+cohort_object: "replace-with-exact-cohort-object"
 crm_record_id: "replace-with-full-id-or-unresolved"
-recipient_name: "replace-with-verified-name"
+recipient_name: "replace-with-verified-person-or-team"
 practice_name: "replace-with-verified-practice"
 drafted_at: "YYYY-MM-DD"
 drafted_by: "agent-name"
@@ -70,6 +70,14 @@ Replace with the complete Day 4 reply.
 Hi [verified salutation],
 
 Replace with the complete Day 10 final reply.
+
+## Producer revision notes
+
+- Initial draft: none. On resubmission, summarize what changed since the last Codex review.
+
+## Review history
+
+- Initial draft: none. On resubmission, move the previous Codex decision and notes here with its review date.
 
 ## Codex review
 
