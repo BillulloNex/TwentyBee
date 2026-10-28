@@ -88,10 +88,13 @@ async function duePeople(stage: Stage): Promise<Person[]> {
   return data.campaign1People.edges.map((e: any) => e.node);
 }
 
-async function cohortRecord(name: string): Promise<any | null> {
+async function cohortRecord(name: string, email: string): Promise<any | null> {
   const data = await twenty(
     `query FindCohort($name: String!) {
       c1: campaign1CohortOnes(filter: { name: { eq: $name } }, first: 1) {
+        edges { node { id name day0Email day4Email day10Email placeholders } }
+      }
+      c2: campaign1CohortTwos(filter: { name: { eq: $name } }, first: 1) {
         edges { node { id name day0Email day4Email day10Email placeholders } }
       }
       pilot: campaign1CohortPilots(filter: { name: { eq: $name } }, first: 1) {
@@ -100,7 +103,11 @@ async function cohortRecord(name: string): Promise<any | null> {
     }`,
     { name },
   );
-  return data.c1.edges[0]?.node || data.pilot.edges[0]?.node || null;
+  const candidates = [data.c1, data.c2, data.pilot].map((r: any) => r.edges[0]?.node).filter(Boolean);
+  // Copy records are looked up by display name, which can repeat across cohorts
+  // (e.g. two practices with a "Dr. Smith"), so prefer the one addressed to this person.
+  const target = (email || "").toLowerCase();
+  return candidates.find((c: any) => (c.placeholders?.email || "").toLowerCase() === target) || candidates[0] || null;
 }
 
 const companyShort = (s?: string): string =>
@@ -175,7 +182,7 @@ function nextDueDate(delayDays: number): string {
 }
 
 async function sendOne(stage: Stage, person: Person, dryRun: boolean): Promise<{ ok: boolean; note: string }> {
-  const cohort = await cohortRecord(person.name || "");
+  const cohort = await cohortRecord(person.name || "", person.email || "");
   const placeholders = cohort?.placeholders || {};
   const stored: string = (cohort?.[stage.bodyField] || "").trim();
 

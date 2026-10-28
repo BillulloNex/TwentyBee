@@ -1,6 +1,6 @@
-// Campaign 1 follow-up sender for Day 4 and Day 10.
+// Campaign 1 sender for Day 0, Day 4 and Day 10.
 // Dry run by default. Flags:
-//   --day 4|10          which follow-up to send (default 4)
+//   --day 0|4|10        which email to send (default 4)
 //   --send              actually send and update Twenty
 //   --only <email>      restrict to one recipient
 //   --ignore-due        include contacts whose nextActionDue is still in the future (staging a dry run)
@@ -44,7 +44,34 @@ const EXCLUDED_NAMES = ["TEST — Internal Send Test (delete after)"];
 const OUT_DIR = path.join(__dirname, "..", "artifacts", "campaign-1-email-drafts");
 const TODAY = new Date().toISOString().slice(0, 10);
 
+// Same order and hash as the daily sender in Twenty, so a contact gets the same domain either way.
+const ROTATION = [
+  "javier@beenex.company",
+  "javier@beenex.digital",
+  "javier@beenex.cloud",
+  "javier@beenex.space",
+  "javier@beenex.info",
+  "javier@beenex.solutions",
+  "javier@beenex.tech",
+  "javier@beenex.org",
+  "javier@getbeenex.com",
+];
+
+const hashId = (s) => {
+  let h = 0;
+  for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) % 100000;
+  return h;
+};
+
 const DAY_CONFIG = {
+  0: {
+    dueAction: "SEND_SEQ1",
+    dueStage: "READY",
+    bodyField: "day0Email",
+    nextStage: "SEQ1_SENT",
+    nextAction: "SEND_SEQ2",
+    nextDelayDays: 3,
+  },
   4: {
     dueAction: "SEND_SEQ2",
     dueStage: "SEQ1_SENT",
@@ -64,7 +91,7 @@ const DAY_CONFIG = {
 };
 const CFG = DAY_CONFIG[DAY];
 if (!CFG) {
-  console.error("--day must be 4 or 10");
+  console.error("--day must be 0, 4 or 10");
   process.exit(1);
 }
 
@@ -106,10 +133,13 @@ async function getDuePeople() {
   return data.campaign1People.edges.map((e) => e.node);
 }
 
-async function getCohortRecord(name) {
+async function getCohortRecord(name, email) {
   const data = await twenty(
     `query FindCohort($name: String!) {
       c1: campaign1CohortOnes(filter: { name: { eq: $name } }, first: 1) {
+        edges { node { id name day0Email day4Email day10Email placeholders } }
+      }
+      c2: campaign1CohortTwos(filter: { name: { eq: $name } }, first: 1) {
         edges { node { id name day0Email day4Email day10Email placeholders } }
       }
       pilot: campaign1CohortPilots(filter: { name: { eq: $name } }, first: 1) {
@@ -118,11 +148,17 @@ async function getCohortRecord(name) {
     }`,
     { name },
   );
-  const c1 = data.c1.edges[0]?.node;
-  if (c1) return { source: "campaign1CohortOne", ...c1 };
-  const pilot = data.pilot.edges[0]?.node;
-  if (pilot) return { source: "campaign1CohortPilot", ...pilot };
-  return null;
+  const candidates = [
+    ["campaign1CohortOne", data.c1],
+    ["campaign1CohortTwo", data.c2],
+    ["campaign1CohortPilot", data.pilot],
+  ]
+    .map(([source, r]) => r.edges[0]?.node && { source, ...r.edges[0].node })
+    .filter(Boolean);
+  // Copy records are looked up by display name, which can repeat across cohorts,
+  // so prefer the one addressed to this person.
+  const target = (email || "").toLowerCase();
+  return candidates.find((c) => (c.placeholders?.email || "").toLowerCase() === target) || candidates[0] || null;
 }
 
 const companyShort = (s) =>
@@ -196,8 +232,41 @@ async function previousEmail(person) {
   return { subject: null, from: null, messageId: person.lastMessageId || null };
 }
 
+function nextDueDate() {
+  const nextDue = new Date(Date.now() + CFG.nextDelayDays * 24 * 60 * 60 * 1000);
+  nextDue.setUTCHours(13, 0, 0, 0);
+  // Follow-ups should land on a weekday morning, not a Saturday or Sunday.
+  while (nextDue.getUTCDay() === 0 || nextDue.getUTCDay() === 6) {
+    nextDue.setUTCDate(nextDue.getUTCDate() + 1);
+  }
+  return nextDue.toISOString();
+}
+
+async function composeDay0(person) {
+  const cohort = await getCohortRecord(person.name, person.email);
+  const override = COPY_OVERRIDES[person.email?.toLowerCase()];
+  const stored = (override || cohort?.day0Email || "").trim();
+  const m = stored.match(/^Subject:\s*([^\n]+)\n+([\s\S]*)$/i);
+  const warnings = [];
+  if (!cohort) warnings.push("no cohort record found by name");
+  if (!m) warnings.push("no day0Email with a Subject line");
+  const bodyText = m ? m[2].trim() : "";
+  if (/\[[^\]]+\]/.test(bodyText)) warnings.push("unresolved [bracket] in body");
+  return {
+    person,
+    subject: m ? m[1].trim() : "",
+    bodyText,
+    bodySource: override ? "override file" : `${cohort?.source}.day0Email`,
+    fromEmail: ROTATION[(hashId(person.id) + (person.emailsSent || 0)) % ROTATION.length],
+    inReplyTo: null,
+    warnings,
+    nextDue: nextDueDate(),
+  };
+}
+
 async function compose(person) {
-  const cohort = await getCohortRecord(person.name);
+  if (DAY === 0) return composeDay0(person);
+  const cohort = await getCohortRecord(person.name, person.email);
   const previous = await previousEmail(person);
   const placeholders = cohort?.placeholders || {};
 
@@ -237,13 +306,6 @@ async function compose(person) {
   if (!cohort) warnings.push("no cohort record found by name");
   if (/\[[^\]]+\]/.test(bodyText)) warnings.push("unresolved [bracket] in body");
 
-  const nextDue = new Date(Date.now() + CFG.nextDelayDays * 24 * 60 * 60 * 1000);
-  nextDue.setUTCHours(13, 0, 0, 0);
-  // Follow-ups should land on a weekday morning, not a Saturday or Sunday.
-  while (nextDue.getUTCDay() === 0 || nextDue.getUTCDay() === 6) {
-    nextDue.setUTCDate(nextDue.getUTCDate() + 1);
-  }
-
   return {
     person,
     subject,
@@ -252,7 +314,7 @@ async function compose(person) {
     fromEmail,
     inReplyTo: previous.messageId,
     warnings,
-    nextDue: nextDue.toISOString(),
+    nextDue: nextDueDate(),
   };
 }
 
@@ -349,7 +411,7 @@ async function main() {
 
   const results = [];
   for (const [i, c] of composed.entries()) {
-    if (c.warnings.some((w) => w.startsWith("no previous sender") || w.startsWith("unresolved"))) {
+    if (c.warnings.some((w) => /^(no previous sender|unresolved|no day0Email)/.test(w))) {
       console.log(`[${i + 1}] SKIPPED ${c.person.email}: ${c.warnings.join("; ")}`);
       results.push({ email: c.person.email, success: false, skipped: true, warnings: c.warnings });
       continue;

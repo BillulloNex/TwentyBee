@@ -1,5 +1,5 @@
 // Write approved email copy from a local override file into Twenty cohort records, then read it back.
-// Usage: node scripts/sync_cohort_copy.js --field day10Email --copy-file <json> [--object campaign1CohortOnes]
+// Usage: node scripts/sync_cohort_copy.js --field day10Email --copy-file <json> [--object campaign1CohortOnes|campaign1CohortTwos|campaign1CohortPilots]
 // The JSON maps recipient email -> body text. Records are matched on placeholders.email.
 
 const fs = require("fs");
@@ -23,9 +23,13 @@ const flag = (name) => {
 const FIELD = flag("--field");
 const COPY_FILE = flag("--copy-file");
 const OBJECT = flag("--object") || "campaign1CohortOnes";
-const SINGULAR = { campaign1CohortOnes: "Campaign1CohortOne", campaign1CohortPilots: "Campaign1CohortPilot" }[OBJECT];
+const SINGULAR = {
+  campaign1CohortOnes: "Campaign1CohortOne",
+  campaign1CohortTwos: "Campaign1CohortTwo",
+  campaign1CohortPilots: "Campaign1CohortPilot",
+}[OBJECT];
 if (!FIELD || !COPY_FILE || !SINGULAR) {
-  console.error("Need --field <day0Email|day4Email|day10Email> --copy-file <json> [--object campaign1CohortOnes|campaign1CohortPilots]");
+  console.error("Need --field <day0Email|day4Email|day10Email> --copy-file <json> [--object campaign1CohortOnes|campaign1CohortTwos|campaign1CohortPilots]");
   process.exit(1);
 }
 
