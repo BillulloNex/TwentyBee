@@ -214,7 +214,7 @@ async function sendEmail(today, week) {
   const subject = !today.size
     ? "DMARC: no new reports"
     : flagged.length
-      ? `DMARC: ${flagged.length} domain${flagged.length > 1 ? "s" : ""} need a look (${flagged.map(([name]) => name).join(", ")})`
+      ? `DMARC: ${flagged.length} ${flagged.length > 1 ? "domains need" : "domain needs"} a look (${flagged.map(([name]) => name).join(", ")})`
       : `DMARC: all clear, ${today.size} domains, ${totalMessages} msgs`;
 
   const cell = "padding:4px 10px;border-bottom:1px solid #eee;";

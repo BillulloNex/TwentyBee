@@ -1,0 +1,19 @@
+{
+  "name": "dmarc-monitor",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dmarc-monitor",
+      "database_id": "20dc9728-02bb-45b1-92cb-47bdfa8073bf"
+    }
+  ],
+  // 12:00 UTC is 8am Eastern in summer, 7am in winter; Google's reports land around 5:40am Eastern.
+  "triggers": { "crons": ["0 12 * * *"] },
+  "vars": {
+    "REPORT_FROM": "DMARC Monitor <dmarc@beenex.org>",
+    "REPORT_TO": "thomas@billullo.com"
+  },
+  "observability": { "enabled": true }
+}

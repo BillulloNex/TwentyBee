@@ -1,0 +1,14 @@
+{
+  "name": "dmarc-monitor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "schema": "wrangler d1 execute dmarc-monitor --remote --file schema.sql"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.7.3",
+    "fflate": "^0.8.2",
+    "postal-mime": "^2.4.4"
+  }
+}
