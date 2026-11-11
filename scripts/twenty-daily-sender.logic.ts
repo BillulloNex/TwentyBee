@@ -1,4 +1,4 @@
-// Source of the Twenty logic function behind "Campaign 1 — Daily Follow-up Sender", which also sends Campaign 2.
+// Source of the Twenty logic function behind "Campaign 1 — Daily Follow-up Sender", which also sends Campaigns 2 and 3.
 // Campaign 1 part is a port of scripts/send_followup.js so the cron inside Twenty can do what the script does.
 // Keys are substituted from scripts/.env when this file is pushed with scripts/push_logic_function.js.
 
@@ -75,6 +75,16 @@ const CAMPAIGN2_STAGES: Stage[] = [
   { action: "SEND_SEQ1", stage: "READY", bodyField: "email1", nextStage: "SEQ1_SENT", nextAction: "SEND_SEQ2", nextDelayDays: 4, label: "Day 0" },
   { action: "SEND_SEQ2", stage: "SEQ1_SENT", bodyField: "email2", nextStage: "SEQ2_SENT", nextAction: "SEND_SEQ3", nextDelayDays: 6, label: "Day 4" },
   { action: "SEND_SEQ3", stage: "SEQ2_SENT", bodyField: "email3", nextStage: "SEQ3_SENT", nextAction: "NONE", nextDelayDays: 0, label: "Day 10" },
+];
+
+// Campaign 3 keeps the copy on the person record and runs a one-week sequence: Day 0, Day 2, Day 4
+// (Monday, Wednesday, Friday when it starts on a Monday). Only verified, VALID-email leads in these
+// cohorts send, and a lead also needs sequenceStage READY and nextAction SEND_SEQ1 to start.
+const CAMPAIGN3_COHORTS = ["C3_COHORT_1", "C3_COHORT_3", "C3_COHORT_4"];
+const CAMPAIGN3_STAGES: Stage[] = [
+  { action: "SEND_SEQ1", stage: "READY", bodyField: "email1", nextStage: "SEQ1_SENT", nextAction: "SEND_SEQ2", nextDelayDays: 2, label: "Day 0" },
+  { action: "SEND_SEQ2", stage: "SEQ1_SENT", bodyField: "email2", nextStage: "SEQ2_SENT", nextAction: "SEND_SEQ3", nextDelayDays: 2, label: "Day 2" },
+  { action: "SEND_SEQ3", stage: "SEQ2_SENT", bodyField: "email3", nextStage: "SEQ3_SENT", nextAction: "NONE", nextDelayDays: 0, label: "Day 4" },
 ];
 
 // Cohorts 5 to 7 follow the Thursday / Saturday / Wednesday / Friday rhythm as gaps, so a
@@ -528,22 +538,32 @@ async function updateCampaign2Person(id: string, data: Record<string, unknown>):
   );
 }
 
-async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun: boolean): Promise<{ ok: boolean; note: string }> {
+type SequenceCopy = { subjectLine?: string; email1?: string; email2?: string; email3?: string };
+
+// Campaigns 2 and 3 share the send path; they differ only in where the copy lives and which object is updated.
+async function sendSequence(
+  campaign: string,
+  stage: Stage,
+  person: any,
+  copy: SequenceCopy | undefined,
+  update: (id: string, data: Record<string, unknown>) => Promise<void>,
+  replies: Replies,
+  dryRun: boolean,
+): Promise<{ ok: boolean; note: string }> {
   const reply = replyFrom(replies, person.email);
   if (reply) {
-    if (!dryRun) await updateCampaign2Person(person.id, { sequenceStage: "REPLIED", nextAction: "NONE" });
+    if (!dryRun) await update(person.id, { sequenceStage: "REPLIED", nextAction: "NONE" });
     return { ok: false, note: `reply from ${reply}; marked REPLIED` };
   }
 
-  const copy = person[CAMPAIGN2_COPY_RELATION[person.cohort]]?.edges[0]?.node;
-  const bodyText: string = (copy?.[stage.bodyField] || "").trim();
+  const bodyText: string = ((copy as any)?.[stage.bodyField] || "").trim();
   let subject = "";
   let fromEmail = person.lastSentFrom || "";
   let inReplyTo = "";
 
   if (stage.label === "Day 0") {
     subject = (copy?.subjectLine || "").trim();
-    if (!subject) return { ok: false, note: "no subject line on the cohort record" };
+    if (!subject) return { ok: false, note: "no subject line" };
     fromEmail = (await pickDay0Sender(person.id, person.emailsSent || 0)) || "";
     if (!fromEmail) return { ok: false, note: "held: every sending domain is capped or paused today" };
   } else {
@@ -552,7 +572,7 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
     if (prev.status !== 200) return { ok: false, note: "previous email not found in Resend: " + prev.status };
     const stopStage = { bounced: "BOUNCED", complained: "OPTED_OUT" }[prev.data.last_event as string];
     if (stopStage) {
-      if (!dryRun) await updateCampaign2Person(person.id, { sequenceStage: stopStage, nextAction: "NONE" });
+      if (!dryRun) await update(person.id, { sequenceStage: stopStage, nextAction: "NONE" });
       return { ok: false, note: `previous email ${prev.data.last_event}; marked ${stopStage}` };
     }
     const threadSubject: string = prev.data.subject || "";
@@ -567,7 +587,7 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
   }
 
   if (!fromEmail) return { ok: false, note: "no sender address" };
-  if (!bodyText) return { ok: false, note: `no ${stage.bodyField} on the cohort record` };
+  if (!bodyText) return { ok: false, note: `no ${stage.bodyField}` };
   if (/\[[^\]]+\]/.test(bodyText)) return { ok: false, note: "unresolved [bracket] in body" };
 
   const payload: any = {
@@ -582,7 +602,7 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
 
   if (dryRun) {
     recordSend(fromEmail);
-    return { ok: true, note: `DRY C2 ${stage.label} from ${fromEmail}; subject "${subject}"; threaded ${inReplyTo ? "yes" : "no"}; body ${bodyText.length} chars; next due ${nextDue}` };
+    return { ok: true, note: `DRY ${campaign} ${stage.label} from ${fromEmail}; subject "${subject}"; threaded ${inReplyTo ? "yes" : "no"}; body ${bodyText.length} chars; next due ${nextDue}` };
   }
 
   const sent = await resend("POST", "/emails", payload);
@@ -590,7 +610,7 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
     return { ok: false, note: "Resend " + sent.status + " " + JSON.stringify(sent.data) };
   }
   recordSend(fromEmail);
-  await updateCampaign2Person(person.id, {
+  await update(person.id, {
     sequenceStage: stage.nextStage,
     emailsSent: (person.emailsSent || 0) + 1,
     nextAction: stage.nextAction,
@@ -598,8 +618,43 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
     lastSentFrom: fromEmail,
     lastMessageId: sent.data.id,
   });
-  return { ok: true, note: `C2 ${stage.label} from ${fromEmail} (${sent.data.id})` };
+  return { ok: true, note: `${campaign} ${stage.label} from ${fromEmail} (${sent.data.id})` };
 }
+
+const sendCampaign2 = (stage: Stage, person: any, replies: Replies, dryRun: boolean) =>
+  sendSequence("C2", stage, person, person[CAMPAIGN2_COPY_RELATION[person.cohort]]?.edges[0]?.node, updateCampaign2Person, replies, dryRun);
+
+async function campaign3DuePeople(stage: Stage, now: Date, ignoreDue: boolean): Promise<any[]> {
+  const data = await twenty(`query {
+    campaign3People(
+      filter: {
+        nextAction: { eq: ${stage.action} }
+        sequenceStage: { eq: ${stage.stage} }
+        cohort: { in: [${CAMPAIGN3_COHORTS.join(", ")}] }
+        researchStatus: { eq: VERIFIED }
+        emailVerification: { eq: VALID }
+        ${ignoreDue ? "" : `or: [{ nextActionDue: { lte: "${now.toISOString()}" } }, { nextActionDue: { is: NULL } }]`}
+      }
+      orderBy: [{ nextActionDue: AscNullsFirst }]
+      first: 100
+    ) {
+      edges { node { id name email cohort emailsSent lastSentFrom lastMessageId nextActionDue subjectLine email1 email2 email3 } }
+    }
+  }`);
+  return data.campaign3People.edges.map((e: any) => e.node);
+}
+
+async function updateCampaign3Person(id: string, data: Record<string, unknown>): Promise<void> {
+  await twenty(
+    `mutation UpdatePerson($id: ID!, $data: Campaign3PersonUpdateInput!) {
+      updateCampaign3Person(id: $id, data: $data) { id }
+    }`,
+    { id, data },
+  );
+}
+
+const sendCampaign3 = (stage: Stage, person: any, replies: Replies, dryRun: boolean) =>
+  sendSequence("C3", stage, person, person, updateCampaign3Person, replies, dryRun);
 
 export const main = async (params: { dryRun?: boolean | string; ignoreDue?: boolean | string }) => {
   const dryRun = params?.dryRun === true || params?.dryRun === "true";
@@ -658,35 +713,41 @@ export const main = async (params: { dryRun?: boolean | string; ignoreDue?: bool
     }
   }
 
-  for (const stage of CAMPAIGN2_STAGES) {
-    let people: any[] = [];
-    try {
-      people = await campaign2DuePeople(stage, now, ignoreDue);
-    } catch (err: any) {
-      lines.push(`Campaign 2 ${stage.label}: query failed: ${err.message}`);
-      failed++;
-      continue;
-    }
-    const due = people.filter((p) => p.email && (ignoreDue || !p.nextActionDue || new Date(p.nextActionDue) <= now));
-    lines.push(`Campaign 2 ${stage.label}: ${people.length} at stage, ${due.length} due`);
-
-    for (const person of due) {
-      if (sent >= MAX_SENDS_PER_RUN) {
-        lines.push(`cap of ${MAX_SENDS_PER_RUN} sends reached; remaining contacts stay due for tomorrow`);
-        break;
-      }
+  const sequences = [
+    { name: "Campaign 2", stages: CAMPAIGN2_STAGES, due: campaign2DuePeople, send: sendCampaign2 },
+    { name: "Campaign 3", stages: CAMPAIGN3_STAGES, due: campaign3DuePeople, send: sendCampaign3 },
+  ];
+  for (const sequence of sequences) {
+    for (const stage of sequence.stages) {
+      let people: any[] = [];
       try {
-        const r = await sendCampaign2(stage, person, replies, dryRun);
-        if (r.ok) {
-          sent++;
-          lines.push(`SENT ${person.email}: ${r.note}`);
-        } else {
-          skipped++;
-          lines.push(`SKIP ${person.email}: ${r.note}`);
-        }
+        people = await sequence.due(stage, now, ignoreDue);
       } catch (err: any) {
+        lines.push(`${sequence.name} ${stage.label}: query failed: ${err.message}`);
         failed++;
-        lines.push(`FAIL ${person.email}: ${err.message}`);
+        continue;
+      }
+      const due = people.filter((p) => p.email && (ignoreDue || !p.nextActionDue || new Date(p.nextActionDue) <= now));
+      lines.push(`${sequence.name} ${stage.label}: ${people.length} at stage, ${due.length} due`);
+
+      for (const person of due) {
+        if (sent >= MAX_SENDS_PER_RUN) {
+          lines.push(`cap of ${MAX_SENDS_PER_RUN} sends reached; remaining contacts stay due for tomorrow`);
+          break;
+        }
+        try {
+          const r = await sequence.send(stage, person, replies, dryRun);
+          if (r.ok) {
+            sent++;
+            lines.push(`SENT ${person.email}: ${r.note}`);
+          } else {
+            skipped++;
+            lines.push(`SKIP ${person.email}: ${r.note}`);
+          }
+        } catch (err: any) {
+          failed++;
+          lines.push(`FAIL ${person.email}: ${err.message}`);
+        }
       }
     }
   }

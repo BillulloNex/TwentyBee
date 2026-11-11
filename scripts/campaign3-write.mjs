@@ -1,9 +1,10 @@
-// Campaign 3 step 3 (gather -> check -> write): hands checked gather results to Pi writer agents in batches,
+// Campaign 3 step 3 (gather -> check -> write): hands checked gather results to writer agents (agy Sonnet by default, Pi as fallback) in batches,
 // each following scripts/campaign3-writer-brief.md and writing artifacts/campaign-3-leads/write-runs/results-<n>.json.
 // A batch whose results file already covers every lead is skipped, so reruns only redo failed batches.
-// Usage: node scripts/campaign3-write.mjs [--only C3-aaaa,C3-bbbb] [--tag r1] [--brief <file>] [--batch 5] [--concurrency 4] [--model <pi model>]
+// Usage: node scripts/campaign3-write.mjs [--only C3-aaaa,C3-bbbb] [--tag r1] [--brief <file>] [--batch 5] [--concurrency 4] [--agent agy|pi] [--model <model>]
 
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { spawn } from "child_process";
 import { fileURLToPath } from "url";
@@ -21,7 +22,9 @@ const agyFile = (key) => {
 };
 const OUT_DIR = path.join(LEADS_DIR, "write-runs");
 const BRIEF = fs.readFileSync(option("--brief") ? path.resolve(option("--brief")) : path.join(__dirname, "campaign3-writer-brief.md"), "utf8");
-const MODEL = option("--model") ?? "cloudflare-ai-gateway/claude-sonnet-5-5";
+// Thomas's rule: Claude Code and Antigravity first; Pi (paid gateway) only when both are out of capacity.
+const AGENT = option("--agent") ?? "agy";
+const MODEL = option("--model") ?? (AGENT === "agy" ? "claude-sonnet-4-6" : "cloudflare-ai-gateway/claude-sonnet-5-5");
 const BATCH = Number(option("--batch") ?? 5);
 const CONCURRENCY = Number(option("--concurrency") ?? 4);
 const only = option("--only")?.split(",");
@@ -63,7 +66,9 @@ function prompt(batch) {
     }),
     "",
     `Results file: ${resultsFile(batch)}`,
-    `Open pages with \`curl -sL -A "Mozilla/5.0" <url>\` and strip tags to read visible text, or \`node ${path.join(__dirname, "render-page.mjs")} <url>\` for JavaScript-built pages. Use the terminal only for those and to write the results file.`,
+    AGENT === "agy"
+      ? "Read the evidence files with your file tools and open web pages with your page reading tools. Write the results file with your file tools. Do not run terminal commands."
+      : `Open pages with \`curl -sL -A "Mozilla/5.0" <url>\` and strip tags to read visible text, or \`node ${path.join(__dirname, "render-page.mjs")} <url>\` for JavaScript-built pages. Use the terminal only for those and to write the results file.`,
     "",
     BRIEF,
   ].join("\n");
@@ -71,7 +76,11 @@ function prompt(batch) {
 
 function run(batch) {
   return new Promise((resolve) => {
-    const child = spawn("pi", ["-p", "--model", MODEL, "--no-session", "--no-context-files", "--no-skills", "--no-prompt-templates", "--no-mcp", "--mode", "json", prompt(batch)], { stdio: ["ignore", "pipe", "pipe"] });
+    const [command, commandArgs, cwd] =
+      AGENT === "agy"
+        ? ["agy", ["-p", prompt(batch), "--model", MODEL, "--add-dir", LEADS_DIR, "--dangerously-skip-permissions", "--output-format", "json", "--print-timeout", "2400s"], fs.mkdtempSync(path.join(os.tmpdir(), "c3-write-"))]
+        : ["pi", ["-p", "--model", MODEL, "--no-session", "--no-context-files", "--no-skills", "--no-prompt-templates", "--no-mcp", "--mode", "json", prompt(batch)], undefined];
+    const child = spawn(command, commandArgs, { cwd, stdio: ["ignore", "pipe", "pipe"] });
     let output = "";
     child.stdout.on("data", (chunk) => (output += chunk));
     child.stderr.on("data", (chunk) => (output += chunk));
@@ -91,7 +100,7 @@ function run(batch) {
 }
 
 const queue = batches.filter((batch) => !done(batch));
-console.log(`${new Date().toISOString()} writing ${queue.length} batches (${queue.reduce((sum, batch) => sum + batch.keys.length, 0)} leads) with ${MODEL} x${CONCURRENCY}`);
+console.log(`${new Date().toISOString()} writing ${queue.length} batches (${queue.reduce((sum, batch) => sum + batch.keys.length, 0)} leads) with ${AGENT} ${MODEL} x${CONCURRENCY}`);
 let totalCost = 0;
 await Promise.all(
   Array.from({ length: CONCURRENCY }, async () => {

@@ -55,7 +55,7 @@ No other clients, numbers, percentages, guarantees or timelines.
 
 Banned phrases: "no guilt", "hence the subject line", "I came across", "I hope", "just floating", "touching base", "circle back", "BeeNex builds inside the tools a practice already uses", "pipeline", "streamline", "leverage", "seamless", "Javier, for".
 
-Style for all three: plain text, no links except the one case-study link in Email 2, no em dashes, no exclamation marks, no emojis, no bullet points, no "I hope this finds you well", no fake urgency. Paragraphs separated by one blank line. Never mention site errors, staff personal details, patients' health, or anything in `doNotMention`. An undated item is never "recent" or "upcoming".
+Style for all three: plain text, no links except the one case-study link in Email 2, no em dashes or double hyphens (" -- ") used as dashes, never name a treatment, procedure, drug or injectable (say "appointments", "follow-ups", "visits" instead), no exclamation marks, no emojis, no bullet points, no "I hope this finds you well", no fake urgency. Paragraphs separated by one blank line. Never mention site errors, staff personal details, patients' health, or anything in `doNotMention`. An undated item is never "recent" or "upcoming".
 
 ## Output
 
