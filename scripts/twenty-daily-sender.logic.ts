@@ -26,6 +26,22 @@ const SENDING_DOMAINS = [
 // while domain volume stays far under 100 a day. Follow-ups reuse lastSentFrom, so threads never switch address.
 const ROTATION = ["javier", "javi", "jsanchez", "j", "sanchez"].flatMap((localPart) => SENDING_DOMAINS.map((domain) => `${localPart}@${domain}`));
 const OWN_DOMAINS = [...ROTATION, ...REPLY_TO].map((address) => address.split("@")[1]);
+// Resend's acceptable-use policy requires a company name and postal address on unsolicited email.
+const FOOTER_TEXT = `BeeNex, 2412 Irwin Street, Melbourne, FL 32901\nIf this isn't relevant, reply "no thanks" and I won't follow up.`;
+// Ramp agreed after the Instantly call: per sending domain per day (Eastern), raised weekly while bounces stay low.
+const DOMAIN_DAILY_CAPS: [string, number][] = [
+  ["2026-11-01", 20],
+  ["2026-11-23", 35],
+  ["2026-11-30", 50],
+  ["2026-12-07", 75],
+  ["2026-12-14", 100],
+];
+// Instantly pauses a campaign at 3% bounces. Under ~50 sends a single bounce crosses 3%, so small
+// samples pause on a bounce count instead.
+const BOUNCE_PAUSE_RATE = 0.03;
+const BOUNCE_PAUSE_MIN_SENDS = 50;
+const BOUNCE_PAUSE_COUNT = 3;
+const BOUNCE_WINDOW_DAYS = 7;
 // A reply from anyone at a practice's own domain stops the sequence for everyone there;
 // shared consumer domains only match the exact address.
 const SHARED_MAIL_DOMAINS = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com", "icloud.com", "me.com", "msn.com", "live.com", "comcast.net", "att.net", "protonmail.com"];
@@ -130,6 +146,90 @@ async function inboundReplies(): Promise<Replies> {
   }
   return { byAddress, byDomain };
 }
+
+type DomainStats = { cap: number; sentToday: Map<string, number>; paused: Map<string, string> };
+let domainStats: DomainStats | null = null;
+
+const easternDate = (date: Date): string => date.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+const increment = (map: Map<string, number>, key: string) => map.set(key, (map.get(key) || 0) + 1);
+
+// Built once per run from Resend's sent list: today's count per sending domain, and domains whose recent
+// bounce or complaint record means they should rest.
+async function loadDomainStats(): Promise<DomainStats> {
+  if (domainStats) return domainStats;
+  const now = new Date();
+  const today = easternDate(now);
+  const windowStart = easternDate(new Date(now.getTime() - BOUNCE_WINDOW_DAYS * 24 * 60 * 60 * 1000));
+  let cap = 0;
+  for (const [from, value] of DOMAIN_DAILY_CAPS) if (today >= from) cap = value;
+  const sentToday = new Map<string, number>();
+  const sentWindow = new Map<string, number>();
+  const bounced = new Map<string, number>();
+  const complained = new Map<string, number>();
+  let after = "";
+  for (let page = 0; page < 80; page++) {
+    const res = await resend("GET", "/emails?limit=100" + (after ? "&after=" + after : ""));
+    if (res.status !== 200) throw new Error("Resend sent list " + res.status);
+    const emails: any[] = res.data.data || [];
+    let pastWindow = false;
+    for (const email of emails) {
+      const day = easternDate(new Date(email.created_at));
+      if (day < windowStart) {
+        pastWindow = true;
+        break;
+      }
+      const from = (String(email.from || "").match(/<([^>]+)>/)?.[1] || String(email.from || "")).trim().toLowerCase();
+      if (!ROTATION.includes(from)) continue;
+      const domain = domainOf(from);
+      increment(sentWindow, domain);
+      if (day === today) increment(sentToday, domain);
+      if (email.last_event === "bounced") increment(bounced, domain);
+      if (email.last_event === "complained") increment(complained, domain);
+    }
+    if (pastWindow || !res.data.has_more || !emails.length) break;
+    after = emails[emails.length - 1].id;
+  }
+  const paused = new Map<string, string>();
+  for (const domain of SENDING_DOMAINS) {
+    const sent = sentWindow.get(domain) || 0;
+    const bounces = bounced.get(domain) || 0;
+    if (complained.get(domain)) paused.set(domain, `${domain} paused: spam complaint in the last ${BOUNCE_WINDOW_DAYS} days`);
+    else if (bounces >= BOUNCE_PAUSE_COUNT || (sent >= BOUNCE_PAUSE_MIN_SENDS && bounces / sent > BOUNCE_PAUSE_RATE))
+      paused.set(domain, `${domain} paused: ${bounces}/${sent} bounced in the last ${BOUNCE_WINDOW_DAYS} days`);
+  }
+  domainStats = { cap, sentToday, paused };
+  return domainStats;
+}
+
+const domainBlock = (stats: DomainStats, domain: string): string | null =>
+  stats.paused.get(domain) || ((stats.sentToday.get(domain) || 0) >= stats.cap ? `${domain} at today's cap of ${stats.cap}` : null);
+
+// A new thread starts from the lead's usual rotation slot, or the next address whose domain still has room.
+async function pickDay0Sender(personId: string, emailsSent: number): Promise<string | null> {
+  const stats = await loadDomainStats();
+  const start = (hashId(personId) + emailsSent) % ROTATION.length;
+  for (let offset = 0; offset < ROTATION.length; offset++) {
+    const address = ROTATION[(start + offset) % ROTATION.length];
+    if (!domainBlock(stats, domainOf(address))) return address;
+  }
+  return null;
+}
+
+// Follow-ups must come from the thread's address, so a capped or paused domain holds them until it has room.
+async function followUpBlock(fromEmail: string): Promise<string | null> {
+  return domainBlock(await loadDomainStats(), domainOf(fromEmail));
+}
+
+const recordSend = (fromEmail: string) => {
+  if (domainStats) increment(domainStats.sentToday, domainOf(fromEmail));
+};
+
+const withFooter = (bodyText: string) => ({
+  text: `${bodyText}\n\n--\n${FOOTER_TEXT}`,
+  html:
+    textToHtml(bodyText) +
+    `\n<p style="margin:16px 0 0 0;font-family:Arial,sans-serif;font-size:12px;line-height:1.4;color:#888">${FOOTER_TEXT.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br/>")}</p>`,
+});
 
 const replyFrom = (replies: Replies, email?: string): string | undefined => {
   const address = (email || "").toLowerCase();
@@ -316,7 +416,8 @@ async function sendOne(stage: Stage, person: Person, replies: Replies, dryRun: b
     if (!m) return { ok: false, note: "no day0Email with a Subject line on the cohort record" };
     subject = m[1].trim();
     bodyText = m[2].trim();
-    fromEmail = ROTATION[(hashId(person.id) + (person.emailsSent || 0)) % ROTATION.length];
+    fromEmail = (await pickDay0Sender(person.id, person.emailsSent || 0)) || "";
+    if (!fromEmail) return { ok: false, note: "held: every sending domain is capped or paused today" };
   } else {
     if (!person.lastMessageId) return { ok: false, note: "no previous message id to thread on" };
     const prev = await resend("GET", "/emails/" + person.lastMessageId);
@@ -339,6 +440,10 @@ async function sendOne(stage: Stage, person: Person, replies: Replies, dryRun: b
     const fm = String(prev.data.from || "").match(/<([^>]+)>/);
     if (fm) fromEmail = fm[1];
     bodyText = stored || genericBody(stage, person, placeholders);
+    if (fromEmail) {
+      const block = await followUpBlock(fromEmail);
+      if (block) return { ok: false, note: `held: ${block}` };
+    }
   }
 
   if (!fromEmail) return { ok: false, note: "no sender address" };
@@ -350,8 +455,7 @@ async function sendOne(stage: Stage, person: Person, replies: Replies, dryRun: b
     to: [person.email],
     reply_to: [fromEmail, ...REPLY_TO],
     subject,
-    html: textToHtml(bodyText),
-    text: bodyText,
+    ...withFooter(bodyText),
   };
   if (inReplyTo) payload.headers = { "In-Reply-To": inReplyTo, References: inReplyTo };
 
@@ -359,6 +463,7 @@ async function sendOne(stage: Stage, person: Person, replies: Replies, dryRun: b
   const nextDue = weekly ? dueAfterGap(WEEKLY_GAP_DAYS[stage.action]) : nextDueDate(stage.nextDelayDays);
 
   if (dryRun) {
+    recordSend(fromEmail);
     return { ok: true, note: `DRY ${stage.label} from ${fromEmail}; subject "${subject}"; threaded ${inReplyTo ? "yes" : "no"}; body ${bodyText.length} chars; next due ${nextDue}` };
   }
 
@@ -366,6 +471,7 @@ async function sendOne(stage: Stage, person: Person, replies: Replies, dryRun: b
   if (sent.status !== 200 || !sent.data?.id) {
     return { ok: false, note: "Resend " + sent.status + " " + JSON.stringify(sent.data) };
   }
+  recordSend(fromEmail);
 
   await twenty(
     `mutation UpdatePerson($id: ID!, $data: Campaign1PersonUpdateInput!) {
@@ -438,7 +544,8 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
   if (stage.label === "Day 0") {
     subject = (copy?.subjectLine || "").trim();
     if (!subject) return { ok: false, note: "no subject line on the cohort record" };
-    fromEmail = ROTATION[(hashId(person.id) + (person.emailsSent || 0)) % ROTATION.length];
+    fromEmail = (await pickDay0Sender(person.id, person.emailsSent || 0)) || "";
+    if (!fromEmail) return { ok: false, note: "held: every sending domain is capped or paused today" };
   } else {
     if (!person.lastMessageId) return { ok: false, note: "no previous message id to thread on" };
     const prev = await resend("GET", "/emails/" + person.lastMessageId);
@@ -453,6 +560,10 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
     inReplyTo = prev.data.message_id || "";
     const fm = String(prev.data.from || "").match(/<([^>]+)>/);
     if (fm) fromEmail = fm[1];
+    if (fromEmail) {
+      const block = await followUpBlock(fromEmail);
+      if (block) return { ok: false, note: `held: ${block}` };
+    }
   }
 
   if (!fromEmail) return { ok: false, note: "no sender address" };
@@ -464,13 +575,13 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
     to: [person.email],
     reply_to: [fromEmail, ...REPLY_TO],
     subject,
-    html: textToHtml(bodyText),
-    text: bodyText,
+    ...withFooter(bodyText),
   };
   if (inReplyTo) payload.headers = { "In-Reply-To": inReplyTo, References: inReplyTo };
   const nextDue = stage.nextAction === "NONE" ? null : nextDueDate(stage.nextDelayDays);
 
   if (dryRun) {
+    recordSend(fromEmail);
     return { ok: true, note: `DRY C2 ${stage.label} from ${fromEmail}; subject "${subject}"; threaded ${inReplyTo ? "yes" : "no"}; body ${bodyText.length} chars; next due ${nextDue}` };
   }
 
@@ -478,6 +589,7 @@ async function sendCampaign2(stage: Stage, person: any, replies: Replies, dryRun
   if (sent.status !== 200 || !sent.data?.id) {
     return { ok: false, note: "Resend " + sent.status + " " + JSON.stringify(sent.data) };
   }
+  recordSend(fromEmail);
   await updateCampaign2Person(person.id, {
     sequenceStage: stage.nextStage,
     emailsSent: (person.emailsSent || 0) + 1,
@@ -497,6 +609,7 @@ export const main = async (params: { dryRun?: boolean | string; ignoreDue?: bool
   let sent = 0;
   let skipped = 0;
   let failed = 0;
+  domainStats = null;
 
   let replies: Replies;
   try {
@@ -578,5 +691,10 @@ export const main = async (params: { dryRun?: boolean | string; ignoreDue?: bool
     }
   }
 
+  if (domainStats) {
+    const stats: DomainStats = domainStats;
+    lines.push(`Domain cap today: ${stats.cap}/domain. Sent today: ${SENDING_DOMAINS.map((domain) => `${domain} ${stats.sentToday.get(domain) || 0}`).join(", ")}`);
+    for (const reason of stats.paused.values()) lines.push(`PAUSED ${reason}`);
+  }
   return { sent, skipped, failed, report: lines.join("\n") };
 };
