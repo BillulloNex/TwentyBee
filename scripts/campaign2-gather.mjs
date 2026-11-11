@@ -1,10 +1,15 @@
-// Gathers Campaign 2 lead evidence with an agent CLI, then checks every quote and the email against the live page.
+// Gathers Campaign 2 or 3 lead evidence with an agent CLI, then checks every quote and the email against the live page.
 // Step 1 of the gather -> check -> write pipeline: agy fills gather.json per campaign2-gather-protocol.md, this script
 // fetches each cited URL (plain fetch, then a Playwright render for JS sites) and marks each item VERIFIED, CLOSE,
 // NOT_ON_PAGE, BROKEN_URL or PAGE_FAILED. Only VERIFIED and CLOSE items may be used by the writer.
-// Results: artifacts/campaign-2-leads/gather-runs/<BEE-n>.json. Rerunning skips finished leads.
+// Results: artifacts/campaign-<n>-leads/gather-runs/<key>.json (key BEE-n for Campaign 2, C3-<id prefix> for Campaign 3).
+// Rerunning skips finished leads. Campaign 3 uses campaign3-gather-protocol.md and accepts --only all.
 // Usage: node scripts/campaign2-gather.mjs --only BEE-1,BEE-2 [--model claude-opus-4-6-thinking | claude-sonnet-4-6 | codex | claude-code:sonnet | pi:<model> | gemini-cli[:model] | perplexity:<sonar model>] [--concurrency 2]
 //        node scripts/campaign2-gather.mjs --recheck BEE-1   (re-runs the check on an existing result)
+//        node scripts/campaign2-gather.mjs --campaign 3 --only all --model pi:<model> --search
+//        --agy-homes ~/.agy-accounts/a,~/.agy-accounts/b runs agy under several signed-in accounts (one HOME each, workers
+//        spread across them; a worker whose account hits its quota hands its lead back and stops). --voice-focus asks for
+//        more owner-voice (social listening) items.
 
 import fs from "fs";
 import os from "os";
@@ -20,10 +25,13 @@ for (const line of fs.readFileSync(path.join(__dirname, ".env"), "utf8").split("
 
 const args = process.argv.slice(2);
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
-const OUT_DIR = option("--out-dir") ? path.resolve(option("--out-dir")) : path.join(__dirname, "..", "artifacts", "campaign-2-leads", "gather-runs");
-const PROTOCOL = fs.readFileSync(path.join(__dirname, "campaign2-gather-protocol.md"), "utf8");
+const CAMPAIGN = option("--campaign") ?? "2";
+const LEADS_DIR = path.join(__dirname, "..", "artifacts", `campaign-${CAMPAIGN}-leads`);
+const OUT_DIR = option("--out-dir") ? path.resolve(option("--out-dir")) : path.join(LEADS_DIR, "gather-runs");
+const PROTOCOL = fs.readFileSync(path.join(__dirname, `campaign${CAMPAIGN}-gather-protocol.md`), "utf8");
 const MODEL = option("--model") ?? "claude-opus-4-6-thinking";
 const CONCURRENCY = Number(option("--concurrency") ?? 2);
+const AGY_HOMES = option("--agy-homes")?.split(",").map((home) => path.resolve(home.replace(/^~/, os.homedir()))) ?? [undefined];
 const LEAD_TIMEOUT_MS = 25 * 60 * 1000;
 const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
 
@@ -39,7 +47,7 @@ async function gql(query) {
 }
 
 // Twenty is the source of truth, but a local copy lets gathering continue while it is unreachable.
-const LEADS_CACHE = path.join(__dirname, "..", "artifacts", "campaign-2-leads", "leads-cache.json");
+const LEADS_CACHE = path.join(LEADS_DIR, "leads-cache.json");
 
 async function loadLeads(issues) {
   let leads;
@@ -54,10 +62,11 @@ async function loadLeads(issues) {
     console.log(`Twenty unreachable (${String(error).slice(0, 80)}); using ${path.basename(LEADS_CACHE)}`);
     leads = JSON.parse(fs.readFileSync(LEADS_CACHE, "utf8"));
   }
-  return leads.filter((lead) => issues.includes(lead.issue));
+  return issues.includes("all") ? leads : leads.filter((lead) => issues.includes(lead.issue));
 }
 
 async function loadLeadsFromTwenty() {
+  if (CAMPAIGN === "3") return loadCampaign3Leads();
   const leads = [];
   let after = null;
   do {
@@ -73,20 +82,33 @@ async function loadLeadsFromTwenty() {
   return leads.map((lead) => ({ ...lead, issue: lead.linearIssueUrl?.match(/BEE-\d+/)?.[0] })).filter((lead) => lead.issue);
 }
 
+// Campaign 3 has no Linear issues; a lead is keyed by its record id so result files stay stable across runs.
+async function loadCampaign3Leads() {
+  const data = await gql(`query {
+    campaign3People(filter: { emailVerification: { eq: VALID }, cohort: { is: NOT_NULL } }, first: 300) {
+      edges { node { id name jobTitle companyName website location email emailType emailSource cohort techStack linkedinUrl } }
+    }
+  }`);
+  return data.campaign3People.edges.map(({ node }) => ({ ...node, emailSource: node.emailSource === "CLODO_LOOKUP" ? "a people-data lookup, not published on the site" : node.emailSource, issue: "C3-" + node.id.slice(0, 8) }));
+}
+
 function prompt(lead) {
   return [
     `Today is ${new Date().toISOString().slice(0, 10)}. Collect evidence for the sales lead below by following the protocol exactly.`,
+    ...(args.includes("--voice-focus") ? ["Spend most of your effort on the owner voice / social listening step: find at least 5 OWNER_VOICE items (podcasts, videos, interviews, articles, newsletters, talks, public posts) from the last 12 months, each on a page that loads without logging in."] : []),
     MODEL.startsWith("pi:")
       ? (args.includes("--search") ? `Use the perplexity_search tool to find the practice's real website, owner and pages when the site on file is wrong, dead or thin, and to look for pages the site does not link to. Then ` : `You have no web search tool: `) + `open pages with \`curl -sL -A "Mozilla/5.0" <url>\` and strip tags (e.g. pipe through sed) to read the visible text. Start from the website on file and follow its links (about, team, contact, FAQ, pricing, new patients). If curl shows little or no visible text (a JavaScript-built site), read the page with \`node ${path.join(__dirname, "render-page.mjs")} <url>\` instead. Use the terminal only for curl, that render command and to write gather.json.`
       : `Use your web search and page reading tools. Do not run terminal commands except to write gather.json.`,
     "",
-    `Lead (Linear ${lead.issue}):`,
+    `Lead (${lead.issue}):`,
     `- Name on file: ${lead.name || "(none)"}`,
     `- Role on file: ${lead.jobTitle || "(none)"}`,
     `- Practice: ${lead.companyName || "(none)"}`,
     `- Website on file: ${lead.website || "(none)"}`,
     `- Location: ${lead.location || "(none)"}`,
     `- Email on file: ${lead.email || "(none)"} (${lead.emailType || "unknown type"}; found via ${lead.emailSource || "unknown"})`,
+    ...(lead.techStack ? [`- Tools seen on their site (unverified): ${lead.techStack}`] : []),
+    ...(lead.linkedinUrl ? [`- LinkedIn on file: ${lead.linkedinUrl}`] : []),
     "",
     PROTOCOL,
   ].join("\n");
@@ -154,10 +176,10 @@ function piUsage(stdout) {
   return total;
 }
 
-function runAgent(promptText, workDir) {
+function runAgent(promptText, workDir, home) {
   return new Promise((resolve) => {
     const [command, commandArgs] = agentCommand(promptText, workDir);
-    const child = spawn(command, commandArgs, { cwd: workDir, stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(command, commandArgs, { cwd: workDir, stdio: ["ignore", "pipe", "pipe"], env: home ? { ...process.env, HOME: home } : process.env });
     let output = "";
     let stdout = "";
     child.stdout.on("data", (chunk) => {
@@ -364,6 +386,17 @@ async function checkEmail(email) {
   return { ...email, check: "NOT_ON_PAGE" };
 }
 
+// Practices rarely name their EHR or booking tool in visible text; a link to the tool's domain in the page is proof enough.
+async function checkTool(tool) {
+  const checked = await checkQuote(tool);
+  if (["VERIFIED", "CLOSE", "RELOCATED"].includes(checked.check) || !tool?.url || !tool?.quote) return checked;
+  for (const render of [false, true]) {
+    const page = await loadPage(tool.url, { render });
+    if (page.html?.toLowerCase().includes(tool.quote.toLowerCase())) return { ...checked, check: "IN_PAGE_SOURCE", via: render ? "render" : "fetch" };
+  }
+  return checked;
+}
+
 let citedPages = [];
 async function check(gathered) {
   citedPages = [...new Set([...(gathered.owner?.evidence ?? []), ...(gathered.fit?.evidence ?? []), ...(gathered.hooks ?? []), gathered.email ?? {}].map((item) => item.url).filter(Boolean))];
@@ -372,6 +405,7 @@ async function check(gathered) {
   const hooks = [];
   for (const hook of gathered.hooks ?? []) hooks.push(await checkQuote(hook));
   const email = await checkEmail(gathered.email);
+  const tools = gathered.tools ? await Promise.all(gathered.tools.map(checkTool)) : undefined;
   const items = [...owner.evidence, ...fit.evidence, ...hooks];
   const passed = (item) => ["VERIFIED", "CLOSE", "RELOCATED"].includes(item.check);
   return {
@@ -380,6 +414,7 @@ async function check(gathered) {
     fit,
     hooks,
     email,
+    ...(tools ? { tools } : {}),
     checkSummary: {
       items: items.length,
       verified: items.filter((item) => item.check === "VERIFIED").length,
@@ -389,6 +424,7 @@ async function check(gathered) {
       brokenUrl: items.filter((item) => item.check === "BROKEN_URL").length,
       pageFailed: items.filter((item) => item.check === "PAGE_FAILED").length,
       usableHooks: hooks.filter(passed).length,
+      ...(tools ? { usableTools: tools.filter((tool) => passed(tool) || tool.check === "IN_PAGE_SOURCE").length } : {}),
       ownerSupported: owner.evidence.some(passed),
       fitSupported: fit.evidence.some(passed),
       email: email?.check ?? "NONE",
@@ -426,12 +462,12 @@ async function perplexityGather(lead, workDir) {
   }
 }
 
-async function gatherLead(lead) {
-  const workDir = fs.mkdtempSync(path.join(os.tmpdir(), `c2-gather-${lead.issue}-`));
+async function gatherLead(lead, home) {
+  const workDir = fs.mkdtempSync(path.join(os.tmpdir(), `c${CAMPAIGN}-gather-${lead.issue}-`));
   const startedAt = new Date().toISOString();
-  const { code, tail, usage } = MODEL.startsWith("perplexity:") ? await perplexityGather(lead, workDir) : await runAgent(prompt(lead), workDir);
+  const { code, tail, usage } = MODEL.startsWith("perplexity:") ? await perplexityGather(lead, workDir) : await runAgent(prompt(lead), workDir, home);
   const file = path.join(workDir, "gather.json");
-  const base = { issue: lead.issue, campaign2PersonId: lead.id, cohort: lead.cohort, practice: lead.companyName, nameOnFile: lead.name, model: MODEL, startedAt, finishedAt: new Date().toISOString(), exitCode: code, workDir, ...(usage ? { agentUsage: usage } : {}) };
+  const base = { issue: lead.issue, [`campaign${CAMPAIGN}PersonId`]: lead.id, cohort: lead.cohort, practice: lead.companyName, nameOnFile: lead.name, model: MODEL, startedAt, finishedAt: new Date().toISOString(), exitCode: code, workDir, ...(usage ? { agentUsage: usage } : {}) };
   if (!fs.existsSync(file)) return { ...base, error: (/RESOURCE_EXHAUSTED|quota|rate limit|429/i.test(tail) ? "QUOTA: " : "NO_OUTPUT: ") + tail.slice(-300) };
   let gathered;
   try {
@@ -454,7 +490,7 @@ if (option("--recheck")) {
 }
 
 const issues = option("--only")?.split(",") ?? [];
-if (!issues.length) throw new Error("Pass --only BEE-1,BEE-2");
+if (!issues.length) throw new Error("Pass --only BEE-1,BEE-2 (or --only all for Campaign 3)");
 const finished = (issue) => {
   const file = path.join(OUT_DIR, issue + ".json");
   return fs.existsSync(file) && !JSON.parse(fs.readFileSync(file, "utf8")).error;
@@ -464,7 +500,8 @@ console.log(`${new Date().toISOString()} gathering ${queue.length} leads with ${
 
 // A spent quota fails every later call within seconds, so stop instead of marking the rest of the queue as errors.
 let quotaStrikes = 0;
-await Promise.all(Array.from({ length: CONCURRENCY }, async () => {
+await Promise.all(Array.from({ length: CONCURRENCY }, async (_, workerIndex) => {
+  const home = AGY_HOMES[workerIndex % AGY_HOMES.length];
   while (queue.length && quotaStrikes < 3) {
     const lead = queue.shift();
     // Several runs can share a lead list; the lock and the finished check keep two of them off the same lead.
@@ -482,9 +519,14 @@ await Promise.all(Array.from({ length: CONCURRENCY }, async () => {
       if (alive) continue;
       fs.writeFileSync(lockFile, `${process.pid} ${MODEL}`);
     }
-    const result = await gatherLead(lead).finally(() => fs.rmSync(lockFile, { force: true }));
+    const result = await gatherLead(lead, home).finally(() => fs.rmSync(lockFile, { force: true }));
+    if (home && AGY_HOMES.length > 1 && result.error?.startsWith("QUOTA")) {
+      console.log(`${result.finishedAt} ${lead.issue} QUOTA on ${path.basename(home)}; handing the lead back and stopping that worker`);
+      queue.push(lead);
+      break;
+    }
     fs.writeFileSync(path.join(OUT_DIR, lead.issue + ".json"), JSON.stringify(result, null, 1));
-    console.log(`${result.finishedAt} ${lead.issue} ${result.error ? result.error.split(":")[0] : "OK " + JSON.stringify(result.checkSummary)}`);
+    console.log(`${result.finishedAt} ${lead.issue}${home ? " [" + path.basename(home) + "]" : ""} ${result.error ? result.error.split(":")[0] : "OK " + JSON.stringify(result.checkSummary)}`);
     quotaStrikes = result.error?.startsWith("QUOTA") ? quotaStrikes + 1 : 0;
   }
 }));
