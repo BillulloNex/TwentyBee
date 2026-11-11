@@ -1,7 +1,7 @@
 // Campaign 3 step 3 (gather -> check -> write): hands checked gather results to Pi writer agents in batches,
 // each following scripts/campaign3-writer-brief.md and writing artifacts/campaign-3-leads/write-runs/results-<n>.json.
 // A batch whose results file already covers every lead is skipped, so reruns only redo failed batches.
-// Usage: node scripts/campaign3-write.mjs [--only C3-aaaa,C3-bbbb] [--tag r1] [--batch 5] [--concurrency 4] [--model <pi model>]
+// Usage: node scripts/campaign3-write.mjs [--only C3-aaaa,C3-bbbb] [--tag r1] [--brief <file>] [--batch 5] [--concurrency 4] [--model <pi model>]
 
 import fs from "fs";
 import path from "path";
@@ -20,7 +20,7 @@ const agyFile = (key) => {
   return fs.existsSync(file) && !JSON.parse(fs.readFileSync(file, "utf8")).error ? file : null;
 };
 const OUT_DIR = path.join(LEADS_DIR, "write-runs");
-const BRIEF = fs.readFileSync(path.join(__dirname, "campaign3-writer-brief.md"), "utf8");
+const BRIEF = fs.readFileSync(option("--brief") ? path.resolve(option("--brief")) : path.join(__dirname, "campaign3-writer-brief.md"), "utf8");
 const MODEL = option("--model") ?? "cloudflare-ai-gateway/claude-sonnet-5-5";
 const BATCH = Number(option("--batch") ?? 5);
 const CONCURRENCY = Number(option("--concurrency") ?? 4);
@@ -58,7 +58,7 @@ function prompt(batch) {
     `Today is ${new Date().toISOString().slice(0, 10)}. Follow the brief below for these leads, one at a time:`,
     ...batch.keys.map((key) => {
       const lead = recipients.get(key);
-      const recipient = lead ? ` (recipient on file: ${lead.name}, ${lead.jobTitle || "role unknown"}, ${lead.email})` : "";
+      const recipient = lead ? ` (recipient on file: ${lead.name}, ${lead.jobTitle || "role unknown"}, ${lead.email}${lead.segment ? `; segment ${lead.segment}; story ${lead.caseStudy}` : ""})` : "";
       return `- ${path.join(GATHER_DIR, key + ".json")}${recipient}${agyFile(key) ? ` and its second evidence file ${agyFile(key)}` : ""}`;
     }),
     "",

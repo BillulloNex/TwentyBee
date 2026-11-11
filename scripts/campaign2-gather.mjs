@@ -6,7 +6,7 @@
 // Rerunning skips finished leads. Campaign 3 uses campaign3-gather-protocol.md and accepts --only all.
 // Usage: node scripts/campaign2-gather.mjs --only BEE-1,BEE-2 [--model claude-opus-4-6-thinking | claude-sonnet-4-6 | codex | claude-code:sonnet | pi:<model> | gemini-cli[:model] | perplexity:<sonar model>] [--concurrency 2]
 //        node scripts/campaign2-gather.mjs --recheck BEE-1   (re-runs the check on an existing result)
-//        node scripts/campaign2-gather.mjs --campaign 3 --only all --model pi:<model> --search
+//        node scripts/campaign2-gather.mjs --campaign 3 --only all --model pi:<model> --search [--protocol <file>]
 //        --agy-homes ~/.agy-accounts/a,~/.agy-accounts/b runs agy under several signed-in accounts (one HOME each, workers
 //        spread across them; a worker whose account hits its quota hands its lead back and stops). --voice-focus asks for
 //        more owner-voice (social listening) items.
@@ -28,7 +28,7 @@ const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : u
 const CAMPAIGN = option("--campaign") ?? "2";
 const LEADS_DIR = path.join(__dirname, "..", "artifacts", `campaign-${CAMPAIGN}-leads`);
 const OUT_DIR = option("--out-dir") ? path.resolve(option("--out-dir")) : path.join(LEADS_DIR, "gather-runs");
-const PROTOCOL = fs.readFileSync(path.join(__dirname, `campaign${CAMPAIGN}-gather-protocol.md`), "utf8");
+const PROTOCOL = fs.readFileSync(option("--protocol") ? path.resolve(option("--protocol")) : path.join(__dirname, `campaign${CAMPAIGN}-gather-protocol.md`), "utf8");
 const MODEL = option("--model") ?? "claude-opus-4-6-thinking";
 const CONCURRENCY = Number(option("--concurrency") ?? 2);
 const AGY_HOMES = option("--agy-homes")?.split(",").map((home) => path.resolve(home.replace(/^~/, os.homedir()))) ?? [undefined];
@@ -86,7 +86,7 @@ async function loadLeadsFromTwenty() {
 async function loadCampaign3Leads() {
   const data = await gql(`query {
     campaign3People(filter: { emailVerification: { eq: VALID }, cohort: { is: NOT_NULL } }, first: 300) {
-      edges { node { id name jobTitle companyName website location email emailType emailSource cohort techStack linkedinUrl } }
+      edges { node { id name jobTitle companyName website location email emailType emailSource cohort techStack linkedinUrl segment caseStudy } }
     }
   }`);
   return data.campaign3People.edges.map(({ node }) => ({ ...node, emailSource: node.emailSource === "CLODO_LOOKUP" ? "a people-data lookup, not published on the site" : node.emailSource, issue: "C3-" + node.id.slice(0, 8) }));
@@ -109,6 +109,7 @@ function prompt(lead) {
     `- Email on file: ${lead.email || "(none)"} (${lead.emailType || "unknown type"}; found via ${lead.emailSource || "unknown"})`,
     ...(lead.techStack ? [`- Tools seen on their site (unverified): ${lead.techStack}`] : []),
     ...(lead.linkedinUrl ? [`- LinkedIn on file: ${lead.linkedinUrl}`] : []),
+    ...(lead.segment ? [`- Segment: ${lead.segment}`] : []),
     "",
     PROTOCOL,
   ].join("\n");
