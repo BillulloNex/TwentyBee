@@ -406,7 +406,13 @@ async function check(gathered) {
   const hooks = [];
   for (const hook of gathered.hooks ?? []) hooks.push(await checkQuote(hook));
   const email = await checkEmail(gathered.email);
-  const tools = gathered.tools ? await Promise.all(gathered.tools.map(checkTool)) : undefined;
+  // Agents sometimes return tools as an object keyed by tool name instead of a list.
+  const toolList = Array.isArray(gathered.tools)
+    ? gathered.tools
+    : gathered.tools && typeof gathered.tools === "object"
+      ? Object.entries(gathered.tools).map(([name, value]) => (value && typeof value === "object" ? { name, ...value } : { name, quote: String(value) }))
+      : null;
+  const tools = toolList ? await Promise.all(toolList.filter((tool) => tool && typeof tool === "object").map(checkTool)) : undefined;
   const items = [...owner.evidence, ...fit.evidence, ...hooks];
   const passed = (item) => ["VERIFIED", "CLOSE", "RELOCATED"].includes(item.check);
   return {
