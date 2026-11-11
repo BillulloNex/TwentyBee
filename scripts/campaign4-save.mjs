@@ -1,5 +1,5 @@
 // Campaign 4: writes organizations and decision makers to Twenty (campaign4Organizations / campaign4People)
-// from the directory scrape, the IRS match, the research agents' output and Reacher results.
+// from the directory scrape, the IRS match, the research agents' output, Reacher and ZeroBounce results.
 // Idempotent: orgs are matched by domain (or name + state when there is no site), people by email or
 // name within the org. Dry run by default.
 // Usage: node scripts/campaign4-save.mjs [--save]
@@ -67,7 +67,10 @@ const research = fs
   .filter((file) => /^output-\d+\.json$/.test(file))
   .flatMap((file) => readJson(path.join(DIR, "research", file), []));
 const researchByDomain = new Map(research.map((record) => [record.domain, record]));
-const verification = readJson(path.join(DIR, "emails-verified.json"), {});
+const verification = readJson(path.join(DIR, "..", "reacher-cache.json"), {});
+const zerobounce = readJson(path.join(DIR, "..", "zerobounce-cache.json"), {});
+const zerobounceStatus = (entry) =>
+  !entry ? "NOT_CHECKED" : ({ valid: "VALID", invalid: "INVALID", "catch-all": "CATCH_ALL", do_not_mail: "DO_NOT_MAIL" })[entry.status] || "UNKNOWN";
 
 const groups = new Map();
 for (const org of orgs) {
@@ -137,10 +140,11 @@ for (const group of groups.values()) {
       email,
       emailType: email ? (emailMatchesName(email, person.name) ? "PERSONAL" : "ORG_INBOX") : null,
       emailVerification: email ? (checked ? checked.result.toUpperCase() : "NOT_CHECKED") : null,
+      zerobounceStatus: email ? zerobounceStatus(zerobounce[email]) : null,
       emailSource: evidence || null,
       sourceUrl: person.sourceUrl || null,
       companyName: org.name,
-      researchStatus: email && checked && ["safe", "risky"].includes(checked.result) ? "VERIFIED" : "NOT_STARTED",
+      researchStatus: email && ["VALID", "CATCH_ALL"].includes(zerobounceStatus(zerobounce[email])) ? "VERIFIED" : "NOT_STARTED",
       sequenceStage: "NOT_STARTED",
       nextAction: "NONE",
       emailsSent: 0,

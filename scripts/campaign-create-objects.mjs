@@ -125,6 +125,7 @@ const CAMPAIGN_4 = [
       email: text,
       emailType: select(["PERSONAL", "ORG_INBOX", "GUESSED"]),
       emailVerification: select(["NOT_CHECKED", "SAFE", "RISKY", "INVALID", "UNKNOWN"]),
+      zerobounceStatus: select(["NOT_CHECKED", "VALID", "INVALID", "CATCH_ALL", "DO_NOT_MAIL", "UNKNOWN"]),
       emailSource: text,
       sourceUrl: text,
       linkedinUrl: text,
