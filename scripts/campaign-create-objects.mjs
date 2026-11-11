@@ -1,8 +1,10 @@
-// Campaign 4 schema in Twenty: campaign4Organization (one per nonprofit, with 990 data) and
-// campaign4Person (decision makers, with the same sequence fields as campaign2Person so the daily
-// sender can pick them up later). Idempotent: existing objects and fields are left alone. Metadata is
-// created one call at a time because parallel creates time out on the workspace schema rebuild.
-// Usage: node scripts/campaign4-create-objects.mjs [--dry-run]
+// Campaign object schemas in Twenty. Campaign 3: campaign3Person (Clodo-sourced clinic leads with the
+// source, verification and screening data of the test). Campaign 4: campaign4Organization (one per
+// nonprofit, with 990 data) and campaign4Person. People carry the same sequence fields as
+// campaign2Person so the daily sender can pick them up later. Idempotent: existing objects and fields
+// are left alone. Metadata is created one call at a time because parallel creates time out on the
+// workspace schema rebuild.
+// Usage: node scripts/campaign-create-objects.mjs --campaign 3|4 [--dry-run]
 
 import fs from "fs";
 import path from "path";
@@ -15,6 +17,7 @@ for (const line of fs.readFileSync(path.join(__dirname, ".env"), "utf8").split("
 }
 const METADATA_URL = (process.env.TWENTY_BASE_URL || "https://20.beenex.cloud") + "/metadata";
 const DRY_RUN = process.argv.includes("--dry-run");
+const CAMPAIGN = process.argv.includes("--campaign") ? process.argv[process.argv.indexOf("--campaign") + 1] : null;
 const COLORS = ["gray", "blue", "green", "orange", "purple", "red", "sky", "turquoise", "yellow", "pink"];
 
 const select = (values) => ({
@@ -38,7 +41,45 @@ const SEQUENCE_FIELDS = {
   emailsSent: number,
 };
 
-const OBJECTS = [
+const CAMPAIGN_3 = [
+  {
+    nameSingular: "campaign3Person",
+    namePlural: "campaign3People",
+    labelSingular: "C3 Person",
+    labelPlural: "C3 People",
+    icon: "IconStethoscope",
+    description: "Campaign 3: cash-pay functional medicine leads sourced from Clodo (lead-source test, Nov 2026)",
+    fields: {
+      jobTitle: text,
+      companyName: text,
+      website: text,
+      domain: text,
+      location: text,
+      linkedinUrl: text,
+      employeeCount: number,
+      industry: text,
+      email: text,
+      emailSource: select(["CLODO_LOOKUP", "CLODO_DEEP_SEARCH", "SITE_PUBLISHED", "PATTERN_GUESS"]),
+      emailType: select(["PERSONAL", "PRACTICE_INBOX", "GUESSED"]),
+      emailVerification: select(["NOT_CHECKED", "VALID", "INVALID", "CATCH_ALL", "UNKNOWN"]),
+      backupEmail: text,
+      cohort: select(["C3_COHORT_1", "C3_COHORT_2", "C3_COHORT_3"]),
+      leadSource: select(["CLODO_PEOPLE_SEARCH", "CLODO_DEEP_SEARCH"]),
+      clodoJobId: text,
+      clodoScore: number,
+      fitStatus: select(["FIT", "MAYBE", "NOT_A_FIT"]),
+      fitReason: text,
+      paymentModel: select(["CASH_PAY", "INSURANCE", "MIXED", "UNKNOWN"]),
+      techStack: text,
+      caseStudy: select(["YUNIQUE", "PRECISION_EPIGENETICS", "GENERIC"]),
+      researchStatus: select(["NOT_STARTED", "IN_RESEARCH", "VERIFIED", "NOT_A_FIT"]),
+      notes: text,
+      ...SEQUENCE_FIELDS,
+    },
+  },
+];
+
+const CAMPAIGN_4 = [
   {
     nameSingular: "campaign4Organization",
     namePlural: "campaign4Organizations",
@@ -96,6 +137,9 @@ const OBJECTS = [
     relations: [{ name: "organization", label: "Organization", target: "campaign4Organization", targetFieldLabel: "People", targetFieldIcon: "IconUsers" }],
   },
 ];
+
+const OBJECTS = { "3": CAMPAIGN_3, "4": CAMPAIGN_4 }[CAMPAIGN];
+if (!OBJECTS) throw new Error("pass --campaign 3 or --campaign 4");
 
 // New relations on the 5.6M-row timelineActivity table are validated and indexed by background jobs
 // (IS_DEFERRED_WORKSPACE_MIGRATION_ACTIONS_ENABLED); Twenty refuses further schema changes until they finish.
