@@ -1,7 +1,7 @@
 // Campaign 3 step 3 (gather -> check -> write): hands checked gather results to Pi writer agents in batches,
 // each following scripts/campaign3-writer-brief.md and writing artifacts/campaign-3-leads/write-runs/results-<n>.json.
 // A batch whose results file already covers every lead is skipped, so reruns only redo failed batches.
-// Usage: node scripts/campaign3-write.mjs [--only C3-aaaa,C3-bbbb] [--batch 5] [--concurrency 4] [--model <pi model>]
+// Usage: node scripts/campaign3-write.mjs [--only C3-aaaa,C3-bbbb] [--tag r1] [--batch 5] [--concurrency 4] [--model <pi model>]
 
 import fs from "fs";
 import path from "path";
@@ -38,7 +38,9 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 const batches = [];
 for (let index = 0; index < keys.length; index += BATCH) batches.push({ id: batches.length + 1, keys: keys.slice(index, index + BATCH) });
 
-const resultsFile = (batch) => path.join(OUT_DIR, `results-${only ? "only-" : ""}${batch.id}.json`);
+// --tag keeps separate --only runs from overwriting each other's results files.
+const TAG = option("--tag") ?? (only ? "only" : "");
+const resultsFile = (batch) => path.join(OUT_DIR, `results-${TAG ? TAG + "-" : ""}${batch.id}.json`);
 const done = (batch) => {
   try {
     const written = new Set(JSON.parse(fs.readFileSync(resultsFile(batch), "utf8")).map((result) => result.key));
@@ -48,10 +50,17 @@ const done = (batch) => {
   }
 };
 
+// The verified address belongs to the person on file, so the writer must greet them even when someone else owns the practice.
+const recipients = new Map(JSON.parse(fs.readFileSync(path.join(LEADS_DIR, "leads-cache.json"), "utf8")).map((lead) => [lead.issue, lead]));
+
 function prompt(batch) {
   return [
     `Today is ${new Date().toISOString().slice(0, 10)}. Follow the brief below for these leads, one at a time:`,
-    ...batch.keys.map((key) => `- ${path.join(GATHER_DIR, key + ".json")}${agyFile(key) ? ` and its second evidence file ${agyFile(key)}` : ""}`),
+    ...batch.keys.map((key) => {
+      const lead = recipients.get(key);
+      const recipient = lead ? ` (recipient on file: ${lead.name}, ${lead.jobTitle || "role unknown"}, ${lead.email})` : "";
+      return `- ${path.join(GATHER_DIR, key + ".json")}${recipient}${agyFile(key) ? ` and its second evidence file ${agyFile(key)}` : ""}`;
+    }),
     "",
     `Results file: ${resultsFile(batch)}`,
     `Open pages with \`curl -sL -A "Mozilla/5.0" <url>\` and strip tags to read visible text, or \`node ${path.join(__dirname, "render-page.mjs")} <url>\` for JavaScript-built pages. Use the terminal only for those and to write the results file.`,

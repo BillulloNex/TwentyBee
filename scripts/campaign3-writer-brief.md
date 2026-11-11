@@ -16,19 +16,17 @@ Hooks have `source`: `OWNER_VOICE` (their podcast, video, interview, article, po
 
 ## What BeeNex may claim (nothing else)
 
-Pick the peer story that fits the lead; never mix their facts.
-
-* **Yunique Medical** - "a cash-pay practice a lot like yours". They ran patient contact and intake in GoHighLevel and the clinical record in Charm. BeeNex connected the two: a new contact becomes a patient record in Charm, bookings, reschedules and cancellations sync, completed intake lands in the right encounter, and patient-specific custom compounds carry over. Live since August 31, 2026. Fits: anyone with a CRM / booking / intake tool separate from the EHR, GoHighLevel or Charm users, intake-heavy onboarding.
-* **Biohax Scientific** - "an epigenetics company that works with practitioners". BeeNex pulled lab reports from several vendors (TruDiagnostic and others) into one structured pipeline and connected it to ordering, billing and notifications; lab-to-order processing went from multiple days to under 30 minutes per patient. Fits: lab-heavy practices (panels, epigenetic or advanced testing), supplement or compounding orders, Fullscript-heavy follow-up.
-* Always true: BeeNex builds inside the tools a practice already uses, not another app on top. Say this in Email 1 or 2 (owners have told us they won't use anything outside their EHR).
+* **Yunique Medical is the story in every Email 1.** It is the "practice a lot like yours". Allowed facts: a cash-pay practice; they handled patient contact and intake in GoHighLevel and kept the chart in Charm, so staff carried information from one to the other by hand; BeeNex connected the two so a new inquiry becomes a patient record, bookings, reschedules and cancellations sync, and completed intake lands in the right visit, all inside the tools they already had. Live since August 31, 2026. Never say Yunique's work involved labs or supplements.
+* **Biohax Scientific is an optional second story, only in Email 2, only for lab-heavy practices** (panels, advanced or epigenetic testing, supplement or compounding orders). Allowed facts: "an epigenetics company that works with practitioners"; BeeNex pulled lab reports from several vendors into one place and tied them to ordering; lab-to-order went from multiple days to under 30 minutes per patient.
+* Owners have told us they will not use anything outside their EHR, so make it clear the work happens inside the tools they already use. Say it in your own words, in their tool names where usable ("inside Cerbo", "without adding another app"), never as a stock sentence.
 
 No other clients, numbers, percentages, guarantees or timelines.
 
 ## Per lead
 
 1. **Fit.** From usable fit evidence. GOOD = cash-pay functional / integrative / longevity. WEAK = meaningful insurance billing plus cash programs, or stance not found. NOT_A_FIT = closed, not a practice, or entirely insurance-billed. NOT_A_FIT means verdict FAIL and no emails.
-2. **Owner.** Use the owner only if an owner evidence item is usable; otherwise open their About / Team page and confirm, or flag "owner unconfirmed".
-3. **Subject line.** Prefer a usable `OWNER_VOICE` hook. Open its page and confirm: it is this owner (not a namesake), the quote means what the agent says, and it is not a health claim, diagnosis, family, religion or politics. Then pick or improve one of `subjectIdeas`, or write your own from that hook:
+2. **Recipient and owner.** The email is sent to the recipient on file (name and address given next to each lead); that address was verified for that person. Always greet the recipient on file, never someone else. Use the owner only if an owner evidence item is usable; otherwise open their About / Team page and confirm. If the recipient is not the owner (practice manager, partner, operations, another clinician), write to them in their own role: the hand-off question suits whoever runs operations, and you may mention the owner by first name once if it helps. Hooks from the owner's public voice can still be used if you frame them as the practice's ("Dr. Walker's episode on..."). Flag "recipient is not the owner: <role>". If the recipient on file turns out not to work at the practice, verdict FAIL.
+3. **Subject line.** Prefer a usable `OWNER_VOICE` hook. Open its page and confirm: it is this owner, shown by two matching details on that page (practice name, city, credentials, photo caption); a namesake risk you cannot rule out means you do not use it, the quote means what the agent says, and it is not a health claim, diagnosis, family, religion or politics. Then pick or improve one of `subjectIdeas`, or write your own from that hook:
    * 2 to 5 words, lowercase, built from their own words or names (episode title, program name, a coined phrase, a number from their page).
    * Looks meaningless to anyone else; to them it reads "how does he know that?".
    * No pitch, no question mark, no "quick question", no "re:", no urgency, no health topics. A podcast or talk whose title names a disease, a drug or a treatment can still be referenced by its show name or episode number, never by its topic.
@@ -38,17 +36,22 @@ No other clients, numbers, percentages, guarantees or timelines.
 4. **Tools.** Name a tool (Cerbo, Charm, Practice Better, Jane, Fullscript, GoHighLevel, Tebra, Athena, AtlasMD, Calendly, HubSpot...) only if a usable `tools` item shows it. Correct spellings: ChARM is "Charm", "Practice Better", "GoHighLevel", "Fullscript", "Cerbo".
 5. **Write.**
 
-**Email 1 (Day 0, 60 to 90 words)**
-* `Hi <First>,` (first name only, no title).
-* First sentence explains the subject line at once and stays inside the quote. Say where you saw it only if the source proves it ("your episode with...", "your talk at...").
-* Bridge in one sentence to the peer story: Yunique or Biohax, in the allowed wording, and why it looks like them (a tool they share, a step their own page describes).
-* One sentence: we build inside the tools they already use.
-* Ask: one short question about a hand-off in their own practice (e.g. "Is there a step between Cerbo and Fullscript your team still does by hand?"). No call request, no link.
-* `Javier`
+**Voice.** Javier is a person writing to another person, not a template. Warm, plain, a little informal, the way a founder writes to a peer he admires. Short sentences. Each email must read as if written only for this owner. Read it aloud; if a sentence could be pasted into another lead's email unchanged, rewrite it.
 
-**Email 2 (Day 2, 30 to 50 words)** - a warm bump that works even if Email 1 was never read: a different usable fact (ideally a booking / intake / lab step from their site), plus "happy to send a 2-minute video of what we built for <Yunique | Biohax> if that's easier than a call." `Javier`.
+**Email 1 (Day 0, 50 to 80 words)**
+* `Hi <First>,` with the recipient on file's first name only, no title.
+* Open on the subject line's item in a natural way: quote their words or name the episode / program / milestone, and add one human reaction (why it stuck, what it says about how they run the practice). Say where you saw it only if the source proves it. Never write "hence the subject line" or explain that it is the subject line.
+* Bridge to Yunique in one or two sentences: why their practice looks like Yunique (a step on their own page, a tool they use, how new patients come in), then what we built for Yunique in plain words, ending on it living inside the tools Yunique already had.
+* Ask one short, specific question about a hand-off in their own practice, using their words or tools ("Is there a step between Practice Better and Fullscript your team still does by hand?"). No call request, no link.
+* Sign `Javier` on its own line. Nothing after it.
 
-**Email 3 (Day 4, 40 to 60 words)** - last note, no guilt: "If you reply with one line on how <a specific step from their site> works today, I'll send back a short sketch of where we'd look first. No call needed." Close by naming the practice. `Javier`.
+**Email 2 (Day 2, 30 to 50 words)** - a warm bump that works even if Email 1 was never read: one different usable fact from their site (ideally booking, intake or labs), stated plainly, then the offer of "a 2-minute video of what we built for Yunique" (or Biohax, for lab-heavy practices). `Javier`.
+
+**Email 3 (Day 4, 35 to 55 words)** - last note, light and without guilt (never write the words "no guilt"): invite one line on how a specific step from their site works today, in exchange for a short sketch of where we'd look first, no call needed. `Javier`.
+
+The human reaction in Email 1 must be grounded in the item itself; never invent a fact about how they practice to make it fit.
+
+Banned phrases: "no guilt", "hence the subject line", "I came across", "I hope", "just floating", "touching base", "circle back", "BeeNex builds inside the tools a practice already uses", "pipeline", "streamline", "leverage", "seamless", "Javier, for".
 
 Style for all three: plain text, no links, no em dashes, no exclamation marks, no emojis, no bullet points, no "I hope this finds you well", no fake urgency. Paragraphs separated by one blank line. Never mention site errors, staff personal details, patients' health, or anything in `doNotMention`. An undated item is never "recent" or "upcoming".
 
