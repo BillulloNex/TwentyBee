@@ -2,7 +2,9 @@
 // each following scripts/campaign3-writer-brief.md and writing artifacts/campaign-3-leads/write-runs/results-<n>.json.
 // A batch whose results file already covers every lead is skipped, so reruns only redo failed batches.
 // --revise: voice pass on finished drafts (scripts/campaign3-revise-brief.md); each batch gets the current drafts, latest results file winning.
-// Usage: node scripts/campaign3-write.mjs [--revise] [--only C3-aaaa,C3-bbbb] [--tag r1] [--brief <file>] [--batch 5] [--concurrency 4] [--agent agy|pi] [--model <model>]
+// --campaign 4 writes Campaign 4 (artifacts/campaign-4-leads, scripts/campaign4-writer-brief.md); a lead may have evidence in
+// gather-runs, gather-runs-agy or both. --agent claude runs Claude Code (claude -p) instead of agy.
+// Usage: node scripts/campaign3-write.mjs [--campaign 4] [--revise] [--only C3-aaaa,C3-bbbb] [--tag r1] [--brief <file>] [--batch 5] [--concurrency 4] [--agent agy|pi] [--model <model>]
 
 import fs from "fs";
 import os from "os";
@@ -13,7 +15,8 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
-const LEADS_DIR = path.join(__dirname, "..", "artifacts", "campaign-3-leads");
+const CAMPAIGN = option("--campaign") ?? "3";
+const LEADS_DIR = path.join(__dirname, "..", "artifacts", `campaign-${CAMPAIGN}-leads`);
 const GATHER_DIR = path.join(LEADS_DIR, "gather-runs");
 // A second, social-listening pass by Antigravity agents; when present it is handed to the writer next to the first.
 const AGY_DIR = path.join(LEADS_DIR, "gather-runs-agy");
@@ -23,25 +26,30 @@ const agyFile = (key) => {
 };
 const OUT_DIR = path.join(LEADS_DIR, "write-runs");
 const REVISE = args.includes("--revise");
-const BRIEF = fs.readFileSync(option("--brief") ? path.resolve(option("--brief")) : path.join(__dirname, REVISE ? "campaign3-revise-brief.md" : "campaign3-writer-brief.md"), "utf8");
+const BRIEF = fs.readFileSync(option("--brief") ? path.resolve(option("--brief")) : path.join(__dirname, REVISE ? "campaign3-revise-brief.md" : `campaign${CAMPAIGN}-writer-brief.md`), "utf8");
 // Thomas's rule: Claude Code and Antigravity first; Pi (paid gateway) only when both are out of capacity.
 const AGENT = option("--agent") ?? "agy";
-const MODEL = option("--model") ?? (AGENT === "agy" ? "claude-sonnet-4-6" : "cloudflare-ai-gateway/claude-sonnet-5-5");
+const MODEL = option("--model") ?? { agy: "claude-sonnet-4-6", claude: "sonnet" }[AGENT] ?? "cloudflare-ai-gateway/claude-sonnet-5-5";
 const BATCH = Number(option("--batch") ?? 5);
 const CONCURRENCY = Number(option("--concurrency") ?? 4);
 const only = option("--only")?.split(",");
 
+fs.mkdirSync(OUT_DIR, { recursive: true });
 const currentDrafts = new Map();
 // Revisions start from the pre-voice drafts so a rerun never revises a revision.
 for (const file of fs.readdirSync(OUT_DIR).filter((name) => /^results-.*\.json$/.test(name) && !name.startsWith("results-voice")).sort()) {
   for (const result of JSON.parse(fs.readFileSync(path.join(OUT_DIR, file), "utf8"))) currentDrafts.set(result.key, result);
 }
 
-const keys = fs
-  .readdirSync(GATHER_DIR)
+const gatherFile = (key) => {
+  const file = path.join(GATHER_DIR, key + ".json");
+  return fs.existsSync(file) && !JSON.parse(fs.readFileSync(file, "utf8")).error ? file : null;
+};
+const evidenceFiles = (key) => [gatherFile(key), agyFile(key)].filter(Boolean);
+const keys = [...new Set([GATHER_DIR, AGY_DIR].filter((dir) => fs.existsSync(dir)).flatMap((dir) => fs.readdirSync(dir)))]
   .filter((file) => file.endsWith(".json"))
   .map((file) => file.replace(/\.json$/, ""))
-  .filter((key) => !JSON.parse(fs.readFileSync(path.join(GATHER_DIR, key + ".json"), "utf8")).error)
+  .filter((key) => evidenceFiles(key).length)
   .filter((key) => !only || only.includes(key))
   .filter((key) => !REVISE || (currentDrafts.has(key) && currentDrafts.get(key).verdict !== "FAIL"))
   .sort();
@@ -72,13 +80,14 @@ function prompt(batch) {
     `Today is ${new Date().toISOString().slice(0, 10)}. Follow the brief below for these leads, one at a time:`,
     ...batch.keys.map((key) => {
       const lead = recipients.get(key);
-      const recipient = lead ? ` (recipient on file: ${lead.name}, ${lead.jobTitle || "role unknown"}, ${lead.email}${lead.segment ? `; segment ${lead.segment}; story ${lead.caseStudy}` : ""})` : "";
-      return `- ${path.join(GATHER_DIR, key + ".json")}${recipient}${agyFile(key) ? ` and its second evidence file ${agyFile(key)}` : ""}`;
+      const recipient = lead ? ` (recipient on file: ${lead.name}, ${lead.jobTitle || "role unknown"}, ${lead.email}${lead.companyName ? `, ${lead.companyName}` : ""}${lead.segment ? `; segment ${lead.segment}` : ""}${lead.caseStudy ? `; story ${lead.caseStudy}` : ""})` : "";
+      const [first, second] = evidenceFiles(key);
+      return `- ${key}: ${first}${second ? ` and its second evidence file ${second}` : ""}${recipient}`;
     }),
     "",
     ...(REVISE ? [`Drafts file: ${draftsFile}`] : []),
     `Results file: ${resultsFile(batch)}`,
-    AGENT === "agy"
+    AGENT === "agy" || AGENT === "claude"
       ? "Read the evidence files with your file tools and open web pages with your page reading tools. Write the results file with your file tools. Do not run terminal commands."
       : `Open pages with \`curl -sL -A "Mozilla/5.0" <url>\` and strip tags to read visible text, or \`node ${path.join(__dirname, "render-page.mjs")} <url>\` for JavaScript-built pages. Use the terminal only for those and to write the results file.`,
     "",
@@ -89,7 +98,9 @@ function prompt(batch) {
 function run(batch) {
   return new Promise((resolve) => {
     const [command, commandArgs, cwd] =
-      AGENT === "agy"
+      AGENT === "claude"
+        ? ["claude", ["-p", prompt(batch), "--model", MODEL, "--add-dir", LEADS_DIR, "--permission-mode", "bypassPermissions", "--allowedTools", "Read,Write,WebFetch,WebSearch", "--output-format", "json"], fs.mkdtempSync(path.join(os.tmpdir(), "c4-write-"))]
+        : AGENT === "agy"
         ? ["agy", ["-p", prompt(batch), "--model", MODEL, "--add-dir", LEADS_DIR, "--dangerously-skip-permissions", "--output-format", "json", "--print-timeout", "2400s"], fs.mkdtempSync(path.join(os.tmpdir(), "c3-write-"))]
         : ["pi", ["-p", "--model", MODEL, "--no-session", "--no-context-files", "--no-skills", "--no-prompt-templates", "--no-mcp", "--mode", "json", prompt(batch)], undefined];
     const child = spawn(command, commandArgs, { cwd, stdio: ["ignore", "pipe", "pipe"] });

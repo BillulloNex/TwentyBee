@@ -2,7 +2,8 @@
 // subject line, the three emails, research summary, source links and reviewer flags, and researchStatus VERIFIED
 // (or NOT_A_FIT). Nothing is queued to send; sequenceStage and nextAction are left alone. Records that already have
 // email1 are skipped unless --overwrite. Dry run by default.
-// Usage: node scripts/campaign3-save-drafts.mjs [--save] [--overwrite]
+// --campaign 4 writes Campaign 4 results onto campaign4People the same way.
+// Usage: node scripts/campaign3-save-drafts.mjs [--campaign 4] [--save] [--overwrite]
 
 import fs from "fs";
 import path from "path";
@@ -14,7 +15,10 @@ for (const line of fs.readFileSync(path.join(__dirname, ".env"), "utf8").split("
   if (match && !process.env[match[1]]) process.env[match[1]] = match[2].trim();
 }
 const API_URL = (process.env.TWENTY_BASE_URL || "https://20.beenex.cloud") + "/graphql";
-const LEADS_DIR = path.join(__dirname, "..", "artifacts", "campaign-3-leads");
+const CAMPAIGN = process.argv.includes("--campaign") ? process.argv[process.argv.indexOf("--campaign") + 1] : "3";
+const LEADS_DIR = path.join(__dirname, "..", "artifacts", `campaign-${CAMPAIGN}-leads`);
+const PLURAL = `campaign${CAMPAIGN}People`;
+const SINGULAR = `Campaign${CAMPAIGN}Person`;
 const SAVE = process.argv.includes("--save");
 const OVERWRITE = process.argv.includes("--overwrite");
 
@@ -42,16 +46,19 @@ for (const file of fs.readdirSync(writeDir).filter((name) => /^results-.*\.json$
   for (const result of JSON.parse(fs.readFileSync(path.join(writeDir, file), "utf8"))) results.set(result.key, result);
 }
 
-const personIdFor = (key) => JSON.parse(fs.readFileSync(path.join(LEADS_DIR, "gather-runs", key + ".json"), "utf8")).campaign3PersonId;
+const existingFilter = CAMPAIGN === "3" ? "cohort: { is: NOT_NULL }" : "researchStatus: { is: NOT_NULL }";
 const existing = new Map(
-  (await gql(`{ campaign3People(first: 300, filter: { cohort: { is: NOT_NULL } }) { edges { node { id email1 } } } }`)).campaign3People.edges.map(({ node }) => [node.id, node]),
+  (await gql(`{ ${PLURAL}(first: 300, filter: { ${existingFilter} }) { edges { node { id email1 } } } }`))[PLURAL].edges.map(({ node }) => [node.id, node]),
 );
+
+// Result keys are C3-/C4- plus the first 8 characters of the record id.
+const personIdFor = (key) => [...existing.keys()].find((id) => id.startsWith(key.slice(3)));
 
 const updates = [];
 for (const [key, result] of results) {
   const id = personIdFor(key);
   if (!existing.has(id)) {
-    console.log(`${key}: no campaign3Person ${id}`);
+    console.log(`${key}: no ${SINGULAR} ${id}`);
     continue;
   }
   if (existing.get(id).email1 && !OVERWRITE) continue;
@@ -81,6 +88,6 @@ if (!SAVE) {
   process.exit(0);
 }
 for (const update of updates) {
-  await gql(`mutation($id: UUID!, $data: Campaign3PersonUpdateInput!) { updateCampaign3Person(id: $id, data: $data) { id } }`, { id: update.id, data: update.data });
+  await gql(`mutation($id: UUID!, $data: ${SINGULAR}UpdateInput!) { update${SINGULAR}(id: $id, data: $data) { id } }`, { id: update.id, data: update.data });
 }
 console.log(`updated ${updates.length} people`);

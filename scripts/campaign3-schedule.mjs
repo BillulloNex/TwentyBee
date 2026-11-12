@@ -3,7 +3,8 @@
 // top of the inbox when they sit down. Patterns are dealt round-robin within each cohort, which spreads Day 0 over every sending day
 // and gives each pattern a similar mix of cohorts to compare reply rates on. Saturday is never a sending day.
 // Dry run by default: prints the plan and a per-day forecast of all three emails.
-// Usage: node scripts/campaign3-schedule.mjs --start 2026-11-15 [--patterns SUN-TUE-FRI,...] [--window 6:00-8:45] [--save]
+// --campaign 4 queues Campaign 4 contacts (ZeroBounce VALID, researched, drafted) the same way.
+// Usage: node scripts/campaign3-schedule.mjs [--campaign 4] --start 2026-11-15 [--patterns SUN-TUE-FRI,...] [--window 6:00-8:45] [--save]
 
 import fs from "fs";
 import path from "path";
@@ -18,6 +19,7 @@ const API_URL = (process.env.TWENTY_BASE_URL || "https://20.beenex.cloud") + "/g
 const args = process.argv.slice(2);
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
 const SAVE = args.includes("--save");
+const CAMPAIGN = option("--campaign") ?? "3";
 const START = option("--start");
 if (!START) throw new Error("pass --start YYYY-MM-DD (first day Day 0 emails may go out)");
 // Default set is a Latin square over the six sending days: each weekday is Email 1 of one pattern, Email 2 of
@@ -35,7 +37,14 @@ const STATE_OFFSET = {
   Louisiana: 1, Minnesota: 1, Mississippi: 1, Missouri: 1, Montana: 2, Nebraska: 1, Nevada: 3, "New Mexico": 2, "North Dakota": 1,
   Oklahoma: 1, Oregon: 3, "South Dakota": 1, Texas: 1, Utah: 2, Washington: 3, Wisconsin: 1, Wyoming: 2,
 };
+const STATE_ABBREVIATIONS = {
+  AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado", HI: "Hawaii", ID: "Idaho", IL: "Illinois", IA: "Iowa",
+  KS: "Kansas", LA: "Louisiana", MN: "Minnesota", MS: "Mississippi", MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada", NM: "New Mexico",
+  ND: "North Dakota", OK: "Oklahoma", OR: "Oregon", SD: "South Dakota", TX: "Texas", UT: "Utah", WA: "Washington", WI: "Wisconsin", WY: "Wyoming",
+};
 const offsetFor = (location) => {
+  const abbreviation = (location || "").match(/,\s*([A-Z]{2})\b/)?.[1];
+  if (abbreviation) return STATE_OFFSET[STATE_ABBREVIATIONS[abbreviation]] ?? 0;
   const state = Object.keys(STATE_OFFSET).find((name) => new RegExp(`\\b${name}\\b`).test(location || "") && !/Washington, D\.?C/.test(location || ""));
   return state ? STATE_OFFSET[state] : 0;
 };
@@ -72,7 +81,21 @@ async function gql(query, variables) {
 
 let after = null;
 const people = [];
-do {
+if (CAMPAIGN === "4") {
+  do {
+    const data = await gql(
+      `query($after: String) { campaign4People(first: 200, after: $after, filter: { researchStatus: { eq: VERIFIED }, zerobounceStatus: { eq: VALID }, sequenceStage: { eq: NOT_STARTED } }) {
+        pageInfo { hasNextPage endCursor } edges { node { id name email email1 organization { city state source budgetWave } } } } }`,
+      { after },
+    );
+    people.push(
+      ...data.campaign4People.edges
+        .map(({ node }) => ({ ...node, cohort: node.organization?.source || "UNKNOWN", fitStatus: node.organization?.budgetWave, location: [node.organization?.city, node.organization?.state].filter(Boolean).join(", ") }))
+        .filter((person) => person.email1),
+    );
+    after = data.campaign4People.pageInfo.hasNextPage ? data.campaign4People.pageInfo.endCursor : null;
+  } while (after);
+} else do {
   const data = await gql(
     `query($after: String) { campaign3People(first: 200, after: $after, filter: { researchStatus: { eq: VERIFIED }, emailVerification: { eq: VALID }, sequenceStage: { eq: NOT_STARTED } }) {
       pageInfo { hasNextPage endCursor } edges { node { id name email cohort fitStatus location email1 } } } }`,
@@ -133,7 +156,7 @@ if (!SAVE) {
   process.exit(0);
 }
 for (const item of plan) {
-  await gql(`mutation($id: UUID!, $data: Campaign3PersonUpdateInput!) { updateCampaign3Person(id: $id, data: $data) { id } }`, {
+  await gql(`mutation($id: UUID!, $data: Campaign${CAMPAIGN}PersonUpdateInput!) { updateCampaign${CAMPAIGN}Person(id: $id, data: $data) { id } }`, {
     id: item.person.id,
     data: { sendPattern: item.pattern, sequenceStage: "READY", nextAction: "SEND_SEQ1", nextActionDue: item.due.toISOString() },
   });

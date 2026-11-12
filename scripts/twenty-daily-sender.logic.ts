@@ -87,6 +87,10 @@ const CAMPAIGN3_STAGES: Stage[] = [
   { action: "SEND_SEQ3", stage: "SEQ2_SENT", bodyField: "email3", nextStage: "SEQ3_SENT", nextAction: "NONE", nextDelayDays: 0, label: "Day 4" },
 ];
 
+// Campaign 4 (behavioral health nonprofits) uses the same three-email sequence and per-lead sendPattern as Campaign 3.
+// A contact sends only when its address passed ZeroBounce and its research is VERIFIED.
+const CAMPAIGN4_STAGES: Stage[] = CAMPAIGN3_STAGES;
+
 // Cohorts 5 to 7 follow the Thursday / Saturday / Wednesday / Friday rhythm as gaps, so a
 // cohort that starts on another day keeps the same spacing: bump 2 days after Email 1,
 // no-ask email 4 days after the bump, LinkedIn request 2 days after that. Weekends count.
@@ -682,6 +686,37 @@ async function updateCampaign3Person(id: string, data: Record<string, unknown>):
 const sendCampaign3 = (stage: Stage, person: any, replies: Replies, dryRun: boolean) =>
   sendSequence("C3", stage, person, person, updateCampaign3Person, replies, dryRun);
 
+async function campaign4DuePeople(stage: Stage, now: Date, ignoreDue: boolean): Promise<any[]> {
+  const data = await twenty(`query {
+    campaign4People(
+      filter: {
+        nextAction: { eq: ${stage.action} }
+        sequenceStage: { eq: ${stage.stage} }
+        researchStatus: { eq: VERIFIED }
+        zerobounceStatus: { eq: VALID }
+        ${ignoreDue ? "" : `or: [{ nextActionDue: { lte: "${now.toISOString()}" } }, { nextActionDue: { is: NULL } }]`}
+      }
+      orderBy: [{ nextActionDue: AscNullsFirst }]
+      first: 100
+    ) {
+      edges { node { id name email emailsSent lastSentFrom lastMessageId nextActionDue sendPattern subjectLine email1 email2 email3 } }
+    }
+  }`);
+  return data.campaign4People.edges.map((e: any) => e.node);
+}
+
+async function updateCampaign4Person(id: string, data: Record<string, unknown>): Promise<void> {
+  await twenty(
+    `mutation UpdatePerson($id: ID!, $data: Campaign4PersonUpdateInput!) {
+      updateCampaign4Person(id: $id, data: $data) { id }
+    }`,
+    { id, data },
+  );
+}
+
+const sendCampaign4 = (stage: Stage, person: any, replies: Replies, dryRun: boolean) =>
+  sendSequence("C4", stage, person, person, updateCampaign4Person, replies, dryRun);
+
 export const main = async (params: { dryRun?: boolean | string; ignoreDue?: boolean | string }) => {
   const dryRun = params?.dryRun === true || params?.dryRun === "true";
   const ignoreDue = params?.ignoreDue === true || params?.ignoreDue === "true";
@@ -742,6 +777,7 @@ export const main = async (params: { dryRun?: boolean | string; ignoreDue?: bool
   const sequences = [
     { name: "Campaign 2", stages: CAMPAIGN2_STAGES, due: campaign2DuePeople, send: sendCampaign2 },
     { name: "Campaign 3", stages: CAMPAIGN3_STAGES, due: campaign3DuePeople, send: sendCampaign3 },
+    { name: "Campaign 4", stages: CAMPAIGN4_STAGES, due: campaign4DuePeople, send: sendCampaign4 },
   ];
   for (const sequence of sequences) {
     for (const stage of sequence.stages) {
