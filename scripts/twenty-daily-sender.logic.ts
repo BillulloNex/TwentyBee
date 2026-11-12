@@ -383,6 +383,8 @@ function nextDueDate(delayDays: number): string {
 // A send pattern such as "TUE-FRI-MON" names the weekday (Eastern) of each email in the sequence, so
 // follow-ups land on chosen days instead of a fixed gap. Saturday is never a sending day.
 const WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+// US holidays when offices are mostly closed (Eastern dates); campaign emails due that day wait for the next run after it.
+const NO_SEND_DATES = ["2026-11-26", "2026-11-27", "2026-12-24", "2026-12-25", "2026-12-31", "2027-01-01"];
 const easternWeekday = (date: Date): string =>
   new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short" }).format(date).toUpperCase();
 
@@ -586,6 +588,7 @@ async function sendSequence(
 
   // A follow-up held by a domain cap stays due; for patterned leads it must not spill into Saturday.
   if (person.sendPattern && easternWeekday(new Date()) === "SAT") return { ok: false, note: "held: no sends on Saturday" };
+  if (NO_SEND_DATES.includes(easternDate(new Date()))) return { ok: false, note: "held: holiday, no sends today" };
 
   const bodyText: string = ((copy as any)?.[stage.bodyField] || "").trim();
   let subject = "";
