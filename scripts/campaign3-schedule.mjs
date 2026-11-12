@@ -4,7 +4,7 @@
 // and gives each pattern a similar mix of cohorts to compare reply rates on. Saturday is never a sending day.
 // Dry run by default: prints the plan and a per-day forecast of all three emails.
 // --campaign 4 queues Campaign 4 contacts (ZeroBounce VALID, researched, drafted) the same way.
-// Usage: node scripts/campaign3-schedule.mjs [--campaign 4] --start 2026-11-15 [--patterns SUN-TUE-FRI,...] [--window 6:00-8:45] [--save]
+// Usage: node scripts/campaign3-schedule.mjs [--campaign 4] --start 2026-11-15 [--patterns SUN-TUE-FRI,...] [--window 6:00-8:45] [--plan-json <file>] [--save]
 
 import fs from "fs";
 import path from "path";
@@ -151,6 +151,7 @@ console.log("day         email1 email2 email3 total");
 for (const [day, row] of [...forecast].sort()) console.log(`${day} ${weekdayOf(day)}  ${row.map((n) => String(n).padStart(6)).join(" ")} ${String(row.reduce((a, b) => a + b, 0)).padStart(5)}`);
 for (const item of plan.slice(0, 6)) console.log(`e.g. ${item.person.name} (${item.person.location}): ${item.pattern}, Day 0 ${item.days[0]} ${item.localTime} local (${item.due.toISOString()})`);
 
+if (option("--plan-json")) fs.writeFileSync(option("--plan-json"), JSON.stringify(plan.map((item) => ({ id: item.person.id, name: item.person.name, pattern: item.pattern, days: item.days, due: item.due.toISOString(), localTime: item.localTime })), null, 1));
 if (!SAVE) {
   console.log("\ndry run; pass --save to queue these in Twenty (they then send automatically)");
   process.exit(0);

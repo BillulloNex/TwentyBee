@@ -218,15 +218,18 @@ async function loadDomainStats(): Promise<DomainStats> {
 const domainBlock = (stats: DomainStats, domain: string): string | null =>
   stats.paused.get(domain) || ((stats.sentToday.get(domain) || 0) >= stats.cap ? `${domain} at today's cap of ${stats.cap}` : null);
 
-// A new thread starts from the lead's usual rotation slot, or the next address whose domain still has room.
+// A new thread goes to the open domain that has sent the least today, so a paused or busy domain's share spreads
+// over all the others instead of landing on its neighbour; the lead's hash picks the mailbox within that domain.
 async function pickDay0Sender(personId: string, emailsSent: number): Promise<string | null> {
   const stats = await loadDomainStats();
-  const start = (hashId(personId) + emailsSent) % ROTATION.length;
-  for (let offset = 0; offset < ROTATION.length; offset++) {
-    const address = ROTATION[(start + offset) % ROTATION.length];
-    if (!domainBlock(stats, domainOf(address))) return address;
-  }
-  return null;
+  const open = SENDING_DOMAINS.filter((domain) => !domainBlock(stats, domain));
+  if (!open.length) return null;
+  // Ties go to the domain the lead's hash points at, so equal loads still spread across domains.
+  const start = (hashId(personId) + emailsSent) % open.length;
+  const ordered = open.map((_, index) => open[(start + index) % open.length]);
+  const domain = ordered.reduce((best, candidate) => ((stats.sentToday.get(candidate) || 0) < (stats.sentToday.get(best) || 0) ? candidate : best));
+  const mailboxes = ROTATION.filter((address) => domainOf(address) === domain);
+  return mailboxes[(hashId(personId) + emailsSent) % mailboxes.length];
 }
 
 // Follow-ups must come from the thread's address, so a capped or paused domain holds them until it has room.

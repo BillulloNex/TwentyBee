@@ -47,9 +47,13 @@ for (const file of fs.readdirSync(writeDir).filter((name) => /^results-.*\.json$
 }
 
 const existingFilter = CAMPAIGN === "3" ? "cohort: { is: NOT_NULL }" : "researchStatus: { is: NOT_NULL }";
-const existing = new Map(
-  (await gql(`{ ${PLURAL}(first: 300, filter: { ${existingFilter} }) { edges { node { id email1 } } } }`))[PLURAL].edges.map(({ node }) => [node.id, node]),
-);
+const existing = new Map();
+for (let after = null, page = 0; page < 20; page++) {
+  const data = (await gql(`query($after: String) { ${PLURAL}(first: 200, after: $after, filter: { ${existingFilter} }) { pageInfo { hasNextPage endCursor } edges { node { id email1 } } } }`, { after }))[PLURAL];
+  for (const { node } of data.edges) existing.set(node.id, node);
+  if (!data.pageInfo.hasNextPage) break;
+  after = data.pageInfo.endCursor;
+}
 
 // Result keys are C3-/C4- plus the first 8 characters of the record id.
 const personIdFor = (key) => [...existing.keys()].find((id) => id.startsWith(key.slice(3)));
