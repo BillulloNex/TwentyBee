@@ -36,8 +36,8 @@ const only = option("--only")?.split(",");
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const currentDrafts = new Map();
-// Revisions start from the pre-voice drafts so a rerun never revises a revision.
-for (const file of fs.readdirSync(OUT_DIR).filter((name) => /^results-.*\.json$/.test(name) && !name.startsWith("results-voice")).sort()) {
+// Revisions start from the drafts before this pass (files of the same --tag are skipped), so a rerun never revises a revision.
+for (const file of fs.readdirSync(OUT_DIR).filter((name) => /^results-.*\.json$/.test(name) && !name.startsWith(`results-${option("--tag") ?? "voice"}`)).sort()) {
   for (const result of JSON.parse(fs.readFileSync(path.join(OUT_DIR, file), "utf8"))) currentDrafts.set(result.key, result);
 }
 
