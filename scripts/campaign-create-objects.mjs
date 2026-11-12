@@ -39,6 +39,7 @@ const SEQUENCE_FIELDS = {
   lastSentFrom: text,
   lastMessageId: text,
   emailsSent: number,
+  sendPattern: text,
 };
 
 const CAMPAIGN_3 = [

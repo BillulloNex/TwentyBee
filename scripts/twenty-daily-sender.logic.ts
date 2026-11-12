@@ -77,10 +77,10 @@ const CAMPAIGN2_STAGES: Stage[] = [
   { action: "SEND_SEQ3", stage: "SEQ2_SENT", bodyField: "email3", nextStage: "SEQ3_SENT", nextAction: "NONE", nextDelayDays: 0, label: "Day 10" },
 ];
 
-// Campaign 3 keeps the copy on the person record and runs a one-week sequence: Day 0, Day 2, Day 4
-// (Monday, Wednesday, Friday when it starts on a Monday). Only verified, VALID-email leads in these
-// cohorts send, and a lead also needs sequenceStage READY and nextAction SEND_SEQ1 to start.
-const CAMPAIGN3_COHORTS = ["C3_COHORT_1", "C3_COHORT_3", "C3_COHORT_4"];
+// Campaign 3 keeps the copy on the person record. Each lead's sendPattern (for example TUE-FRI-MON) sets the
+// weekday of each email; nextDelayDays is only the fallback for a lead without one. Only verified, VALID-email
+// leads in these cohorts send, and a lead also needs sequenceStage READY and nextAction SEND_SEQ1 to start.
+const CAMPAIGN3_COHORTS = ["C3_COHORT_1", "C3_COHORT_2", "C3_COHORT_3", "C3_COHORT_4"];
 const CAMPAIGN3_STAGES: Stage[] = [
   { action: "SEND_SEQ1", stage: "READY", bodyField: "email1", nextStage: "SEQ1_SENT", nextAction: "SEND_SEQ2", nextDelayDays: 2, label: "Day 0" },
   { action: "SEND_SEQ2", stage: "SEQ1_SENT", bodyField: "email2", nextStage: "SEQ2_SENT", nextAction: "SEND_SEQ3", nextDelayDays: 2, label: "Day 2" },
@@ -373,6 +373,25 @@ function nextDueDate(delayDays: number): string {
   return d.toISOString();
 }
 
+// A send pattern such as "TUE-FRI-MON" names the weekday (Eastern) of each email in the sequence, so
+// follow-ups land on chosen days instead of a fixed gap. Saturday is never a sending day.
+const WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const easternWeekday = (date: Date): string =>
+  new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short" }).format(date).toUpperCase();
+
+function patternDue(pattern: string, emailIndex: number): string | null {
+  const day = pattern.split("-")[emailIndex];
+  if (!day || !WEEKDAYS.includes(day) || day === "SAT") return null;
+  for (let offset = 1; offset <= 7; offset++) {
+    const d = new Date(Date.now() + offset * 24 * 60 * 60 * 1000);
+    if (easternWeekday(d) === day) {
+      d.setUTCSeconds(0, 0);
+      return d.toISOString();
+    }
+  }
+  return null;
+}
+
 function dueAfterGap(gapDays: number): string {
   const d = new Date(Date.now() + gapDays * 24 * 60 * 60 * 1000);
   d.setUTCSeconds(0, 0);
@@ -556,6 +575,9 @@ async function sendSequence(
     return { ok: false, note: `reply from ${reply}; marked REPLIED` };
   }
 
+  // A follow-up held by a domain cap stays due; for patterned leads it must not spill into Saturday.
+  if (person.sendPattern && easternWeekday(new Date()) === "SAT") return { ok: false, note: "held: no sends on Saturday" };
+
   const bodyText: string = ((copy as any)?.[stage.bodyField] || "").trim();
   let subject = "";
   let fromEmail = person.lastSentFrom || "";
@@ -598,7 +620,9 @@ async function sendSequence(
     ...withFooter(bodyText),
   };
   if (inReplyTo) payload.headers = { "In-Reply-To": inReplyTo, References: inReplyTo };
-  const nextDue = stage.nextAction === "NONE" ? null : nextDueDate(stage.nextDelayDays);
+  const nextEmailIndex = { SEND_SEQ1: 1, SEND_SEQ2: 2 }[stage.action as string];
+  const nextDue =
+    stage.nextAction === "NONE" ? null : (person.sendPattern && nextEmailIndex && patternDue(person.sendPattern, nextEmailIndex)) || nextDueDate(stage.nextDelayDays);
 
   if (dryRun) {
     recordSend(fromEmail);
@@ -638,7 +662,7 @@ async function campaign3DuePeople(stage: Stage, now: Date, ignoreDue: boolean): 
       orderBy: [{ nextActionDue: AscNullsFirst }]
       first: 100
     ) {
-      edges { node { id name email cohort emailsSent lastSentFrom lastMessageId nextActionDue subjectLine email1 email2 email3 } }
+      edges { node { id name email cohort emailsSent lastSentFrom lastMessageId nextActionDue sendPattern subjectLine email1 email2 email3 } }
     }
   }`);
   return data.campaign3People.edges.map((e: any) => e.node);
