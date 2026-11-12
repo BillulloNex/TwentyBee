@@ -1,9 +1,9 @@
 // Queues Campaign 3 for the daily sender. Each sendable lead gets a weekday send pattern (the day of each of its
-// three emails, Eastern) and a Day 0 due time of 8am in the lead's own time zone, so it is near the top of the inbox
-// when they sit down. Patterns are dealt round-robin within each cohort, which spreads Day 0 over every sending day
+// three emails, Eastern) and an irregular early-morning Day 0 time in the lead's own time zone, so it is near the
+// top of the inbox when they sit down. Patterns are dealt round-robin within each cohort, which spreads Day 0 over every sending day
 // and gives each pattern a similar mix of cohorts to compare reply rates on. Saturday is never a sending day.
 // Dry run by default: prints the plan and a per-day forecast of all three emails.
-// Usage: node scripts/campaign3-schedule.mjs --start 2026-11-15 [--patterns SUN-TUE-FRI,MON-WED-FRI,...] [--save]
+// Usage: node scripts/campaign3-schedule.mjs --start 2026-11-15 [--patterns SUN-TUE-FRI,...] [--window 6:00-8:45] [--save]
 
 import fs from "fs";
 import path from "path";
@@ -95,13 +95,23 @@ const plan = people.map((person) => {
   return { person, pattern, days: [day0, day1, day2], offset: offsetFor(person.location) };
 });
 
-// Spread each day's Day 0 sends four minutes apart from 8am local.
-const slots = new Map();
+// Day 0 goes out at an irregular early-morning minute in the lead's own time zone (6:00 to 8:45 by default), so
+// sends from one domain never form a round-number, evenly spaced pattern. The time is seeded by the record id,
+// so a rerun produces the same schedule.
+const [WINDOW_START, WINDOW_END] = (option("--window") ?? "6:00-8:45").split("-").map((time) => {
+  const [hour, minute] = time.split(":").map(Number);
+  return hour * 60 + minute;
+});
+const seeded = (text) => {
+  let hash = 2166136261;
+  for (const char of text) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
+  return (hash >>> 0) / 2 ** 32;
+};
 for (const item of plan) {
-  const key = `${item.days[0]}|${item.offset}`;
-  const index = slots.get(key) ?? 0;
-  slots.set(key, index + 1);
-  item.due = easternTime(item.days[0], 8 + item.offset + Math.floor((index * 4) / 60), (index * 4) % 60);
+  let localMinutes = WINDOW_START + Math.floor(seeded(item.person.id) * (WINDOW_END - WINDOW_START));
+  if (localMinutes % 5 === 0) localMinutes += 2;
+  item.localTime = `${Math.floor(localMinutes / 60)}:${String(localMinutes % 60).padStart(2, "0")}`;
+  item.due = easternTime(item.days[0], Math.floor(localMinutes / 60) + item.offset, localMinutes % 60);
 }
 
 const forecast = new Map();
@@ -116,7 +126,7 @@ for (const item of plan) byPattern[item.pattern] = (byPattern[item.pattern] || 0
 console.log("per pattern", byPattern);
 console.log("day         email1 email2 email3 total");
 for (const [day, row] of [...forecast].sort()) console.log(`${day} ${weekdayOf(day)}  ${row.map((n) => String(n).padStart(6)).join(" ")} ${String(row.reduce((a, b) => a + b, 0)).padStart(5)}`);
-for (const item of plan.slice(0, 4)) console.log(`e.g. ${item.person.name} (${item.person.location}): ${item.pattern}, Day 0 due ${item.due.toISOString()}`);
+for (const item of plan.slice(0, 6)) console.log(`e.g. ${item.person.name} (${item.person.location}): ${item.pattern}, Day 0 ${item.days[0]} ${item.localTime} local (${item.due.toISOString()})`);
 
 if (!SAVE) {
   console.log("\ndry run; pass --save to queue these in Twenty (they then send automatically)");

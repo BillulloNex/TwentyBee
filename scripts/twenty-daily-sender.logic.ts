@@ -385,7 +385,9 @@ function patternDue(pattern: string, emailIndex: number): string | null {
   for (let offset = 1; offset <= 7; offset++) {
     const d = new Date(Date.now() + offset * 24 * 60 * 60 * 1000);
     if (easternWeekday(d) === day) {
-      d.setUTCSeconds(0, 0);
+      // Each follow-up drifts 7 to 45 minutes from the previous send's time, so a thread never repeats one exact time.
+      const drift = (7 + Math.floor(Math.random() * 39)) * (Math.random() < 0.5 ? -1 : 1);
+      d.setUTCMinutes(d.getUTCMinutes() + drift, 0, 0);
       return d.toISOString();
     }
   }
