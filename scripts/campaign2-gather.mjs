@@ -2,8 +2,8 @@
 // Step 1 of the gather -> check -> write pipeline: agy fills gather.json per campaign2-gather-protocol.md, this script
 // fetches each cited URL (plain fetch, then a Playwright render for JS sites) and marks each item VERIFIED, CLOSE,
 // NOT_ON_PAGE, BROKEN_URL or PAGE_FAILED. Only VERIFIED and CLOSE items may be used by the writer.
-// Results: artifacts/campaign-<n>-leads/gather-runs/<key>.json (key BEE-n for Campaign 2, C3-<id prefix> for Campaign 3).
-// Rerunning skips finished leads. Campaign 3 uses campaign3-gather-protocol.md and accepts --only all.
+// Results: artifacts/campaign-<n>-leads/gather-runs/<key>.json (key BEE-n for Campaign 2, C3-/C4-<id prefix> for Campaigns 3 and 4).
+// Rerunning skips finished leads. Campaigns 3 and 4 use their own gather protocol and accept --only all.
 // Usage: node scripts/campaign2-gather.mjs --only BEE-1,BEE-2 [--model claude-opus-4-6-thinking | claude-sonnet-4-6 | codex | claude-code:sonnet | pi:<model> | gemini-cli[:model] | perplexity:<sonar model>] [--concurrency 2]
 //        node scripts/campaign2-gather.mjs --recheck BEE-1   (re-runs the check on an existing result)
 //        node scripts/campaign2-gather.mjs --campaign 3 --only all --model pi:<model> --search [--protocol <file>]
@@ -67,6 +67,7 @@ async function loadLeads(issues) {
 
 async function loadLeadsFromTwenty() {
   if (CAMPAIGN === "3") return loadCampaign3Leads();
+  if (CAMPAIGN === "4") return loadCampaign4Leads();
   const leads = [];
   let after = null;
   do {
@@ -90,6 +91,29 @@ async function loadCampaign3Leads() {
     }
   }`);
   return data.campaign3People.edges.map(({ node }) => ({ ...node, emailSource: node.emailSource === "CLODO_LOOKUP" ? "a people-data lookup, not published on the site" : node.emailSource, issue: "C3-" + node.id.slice(0, 8) }));
+}
+
+// Campaign 4 people hang off their organization; only ZeroBounce-verified contacts are researched.
+async function loadCampaign4Leads() {
+  const data = await gql(`query {
+    campaign4People(filter: { researchStatus: { eq: VERIFIED } }, first: 300) {
+      edges { node { id name jobTitle roleType email emailType emailSource linkedinUrl organization { name website city state source } } }
+    }
+  }`);
+  return data.campaign4People.edges.map(({ node }) => ({
+    id: node.id,
+    name: node.name,
+    jobTitle: node.jobTitle,
+    companyName: node.organization?.name,
+    website: node.organization?.website,
+    location: [node.organization?.city, node.organization?.state].filter(Boolean).join(", "),
+    email: node.email,
+    emailType: node.emailType,
+    emailSource: node.emailSource,
+    linkedinUrl: node.linkedinUrl,
+    segment: node.organization?.source,
+    issue: "C4-" + node.id.slice(0, 8),
+  }));
 }
 
 function prompt(lead) {
