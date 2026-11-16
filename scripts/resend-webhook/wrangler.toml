@@ -4,6 +4,9 @@ compatibility_date = "2024-12-01"
 
 [vars]
 TWENTY_API_URL = "https://20.beenex.cloud/graphql"
+TWENTY_APP_URL = "https://20.beenex.cloud"
+# BeeNex Sales group, Sales Funnel topic
+TELEGRAM_CHAT_ID = "-1003893083929"
+TELEGRAM_THREAD_ID = "389"
 
-# Set these as secrets via: wrangler secret put TWENTY_API_TOKEN
-# and: wrangler secret put RESEND_WEBHOOK_SECRET
+# Secrets (wrangler secret put): TWENTY_API_TOKEN, RESEND_API_KEY, RESEND_WEBHOOK_SECRET, TELEGRAM_BOT_TOKEN
