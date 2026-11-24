@@ -10,6 +10,8 @@ type Env = {
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHAT_ID: string;
   TELEGRAM_THREAD_ID: string;
+  SENDER_WORKFLOW_ID: string;
+  SERVER_ALERT_TOKEN: string;
 };
 
 type Campaign = { label: string; plural: string; singular: string; typeName: string };
@@ -319,8 +321,84 @@ const handleUnknownReply = async (env: Env, email: ReceivedEmail) => {
   return { alerted: true, unknownSender: true };
 };
 
+const SENDER_STALE_MINUTES = 30;
+// The cron runs every 10 minutes with no stored state, so a problem that lasts is re-announced
+// only in the first run of each 3-hour block instead of every 10 minutes.
+const REPEAT_EVERY_MINUTES = 180;
+const isFirstRunOfBlock = (now: Date) => (now.getUTCHours() * 60 + now.getUTCMinutes()) % REPEAT_EVERY_MINUTES < 10;
+
+type SenderRun = { status: string; createdAt: string };
+
+const checkSender = async (env: Env, now: Date, notify = true) => {
+  let runs: SenderRun[];
+  try {
+    const data = await queryTwenty(
+      env,
+      `query SenderRuns($workflowId: UUID!) {
+        workflowRuns(filter: { workflowId: { eq: $workflowId } }, orderBy: [{ createdAt: DescNullsLast }], first: 3) {
+          edges { node { status createdAt } }
+        }
+      }`,
+      { workflowId: env.SENDER_WORKFLOW_ID },
+    );
+    runs = (data.workflowRuns?.edges ?? []).map(({ node }: { node: SenderRun }) => node);
+    if (!runs.length) throw new Error('no sender runs returned');
+  } catch (error) {
+    if (notify && isFirstRunOfBlock(now)) await sendTelegram(env, `<b>Sender check failed</b>\nCould not read Twenty: ${escapeHtml((error as Error).message)}`);
+    return { problem: 'twenty unreachable', error: (error as Error).message };
+  }
+
+  const minutesSinceLastRun = runs[0] ? (now.getTime() - new Date(runs[0].createdAt).getTime()) / 60000 : Infinity;
+  const stale = minutesSinceLastRun > SENDER_STALE_MINUTES;
+  const failing = runs.length === 3 && runs.every((run) => run.status === 'FAILED');
+  if (!stale && !failing) return { ok: true, minutesSinceLastRun: Math.round(minutesSinceLastRun) };
+
+  // Alert as soon as the run goes stale or starts failing, then every 3 hours while it lasts.
+  const justWentStale = stale && minutesSinceLastRun <= SENDER_STALE_MINUTES + 10;
+  if (notify && (justWentStale || isFirstRunOfBlock(now))) {
+    const last = runs[0] ? `${easternTime(runs[0].createdAt)} ET (${runs[0].status})` : 'never';
+    const reason = stale
+      ? `It hasn't run for ${Math.round(minutesSinceLastRun)} minutes (it should run every 5).`
+      : 'Its last 3 runs failed.';
+    await sendTelegram(
+      env,
+      [
+        '<b>CAMPAIGN SENDER IS DOWN</b>',
+        reason,
+        `Last run: ${last}`,
+        'No campaign emails go out until this is fixed. Usually the Twenty worker container has stopped: check it on the server and restart it.',
+      ].join('\n'),
+    );
+  }
+  return { problem: stale ? 'stale' : 'failing', minutesSinceLastRun: Math.round(minutesSinceLastRun) };
+};
+
+// The production server posts here (disk space and similar) so its alerts reach the same Telegram topic.
+const isServerAuthorized = (request: Request, env: Env) =>
+  Boolean(env.SERVER_ALERT_TOKEN) && request.headers.get('authorization') === `Bearer ${env.SERVER_ALERT_TOKEN}`;
+
+const handleServerAlert = async (request: Request, env: Env) => {
+  if (!isServerAuthorized(request, env)) return new Response('Unauthorized', { status: 401 });
+  const { text } = (await request.json()) as { text?: string };
+  if (!text) return new Response('Missing text', { status: 400 });
+  await sendTelegram(env, `<b>SERVER ALERT</b>\n${escapeHtml(text.slice(0, 1500))}`);
+  return Response.json({ ok: true });
+};
+
 export default {
+  async scheduled(controller: ScheduledController, env: Env): Promise<void> {
+    const result = await checkSender(env, new Date(controller.scheduledTime));
+    console.log('[sender-check]', JSON.stringify(result));
+  },
+
   async fetch(request: Request, env: Env): Promise<Response> {
+    const { pathname } = new URL(request.url);
+    if (request.method === 'POST' && pathname === '/server-alert') return handleServerAlert(request, env);
+    // Read-only status of the sender check, for testing and dashboards; never posts to Telegram.
+    if (request.method === 'GET' && pathname === '/sender-check') {
+      if (!isServerAuthorized(request, env)) return new Response('Unauthorized', { status: 401 });
+      return Response.json(await checkSender(env, new Date(), false));
+    }
     if (request.method !== 'POST') return new Response('Method not allowed', { status: 405 });
 
     const rawBody = await request.text();

@@ -8,5 +8,11 @@ TWENTY_APP_URL = "https://20.beenex.cloud"
 # BeeNex Sales group, Sales Funnel topic
 TELEGRAM_CHAT_ID = "-1003893083929"
 TELEGRAM_THREAD_ID = "389"
+# workflow record id of "Campaign 1 — Daily Follow-up Sender"
+SENDER_WORKFLOW_ID = "5f1b6bfc-7832-4df0-9b4f-62decf3fc2b9"
 
-# Secrets (wrangler secret put): TWENTY_API_TOKEN, RESEND_API_KEY, RESEND_WEBHOOK_SECRET, TELEGRAM_BOT_TOKEN
+# Secrets (wrangler secret put): TWENTY_API_TOKEN, RESEND_API_KEY, RESEND_WEBHOOK_SECRET, TELEGRAM_BOT_TOKEN, SERVER_ALERT_TOKEN
+
+# Checks every 10 minutes that the campaign sender workflow in Twenty is still running.
+[triggers]
+crons = ["*/10 * * * *"]
